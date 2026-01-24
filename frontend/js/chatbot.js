@@ -15,7 +15,7 @@ if (ChatbotState.initialized) {
   // ===============================
   // CONFIG
   // ===============================
-  const GEMINI_API_KEY = "AIzaSyAIg6pdG2NQsjKONQqYx42kfsET9QhCUb0";
+ 
 
   const GEMINI_ENDPOINT =
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
