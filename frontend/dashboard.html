@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TaxBuddy Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="bot.css" />
+  <script defer src="js/chatbot.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    // Check if user is authenticated
+    const token = localStorage.getItem('tb_token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  
+  <style>
+    /* Enhanced Dashboard Hero */
+    .dashboard-hero {
+      margin: 20px 40px 30px;
+      padding: 50px 40px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, 
+        rgba(79, 70, 229, 0.9) 0%, 
+        rgba(99, 102, 241, 0.85) 50%,
+        rgba(124, 58, 237, 0.8) 100%);
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(79, 70, 229, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .dashboard-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .dashboard-hero::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.05"><path d="M0,0 L100,0 L100,100 Z" fill="white"/></svg>');
+      background-size: cover;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .dashboard-hero h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #e0e7ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .dashboard-hero p {
+      font-size: 18px;
+      opacity: 0.95;
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+
+    /* Tax Information Hub Container */
+    .tax-hub-container {
+      margin: 0 40px 60px;
+    }
+
+    /* Hub Header */
+    .hub-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .hub-header h2 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #7c6cff, #5b8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+
+    .hub-header h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--primary-gradient);
+      border-radius: 2px;
+    }
+
+    .hub-header p {
+      color: var(--text-secondary);
+      font-size: 18px;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Enhanced Tabs */
+    .enhanced-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .enhanced-tab {
+      padding: 18px 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-muted);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .enhanced-tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(124, 108, 255, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .enhanced-tab:hover {
+      background: rgba(124, 108, 255, 0.1);
+      transform: translateY(-3px);
+      border-color: rgba(124, 108, 255, 0.3);
+      color: var(--text-primary);
+    }
+
+    .enhanced-tab:hover::before {
+      left: 100%;
+    }
+
+    .enhanced-tab.active {
+      background: rgba(124, 108, 255, 0.2);
+      border-color: rgba(124, 108, 255, 0.4);
+      color: white;
+      box-shadow: 0 8px 30px rgba(124, 108, 255, 0.25);
+    }
+
+    .tab-icon {
+      font-size: 18px;
+    }
+
+    /* Enhanced Content Sections */
+    .hub-content-section {
+      display: none;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hub-content-section.active {
+      display: block;
+    }
+
+    .content-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .content-header h3 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--text-primary);
+    }
+
+    .content-header p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Regime Comparison Grid */
+    .regime-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 30px;
+      margin: 40px 0;
+    }
+
+    @media (max-width: 1100px) {
+      .regime-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .regime-card-enhanced {
+      background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.01) 100%);
+      border-radius: 24px;
+      padding: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .regime-card-enhanced::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .regime-card-enhanced.old::before {
+      background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+    }
+
+    .regime-card-enhanced.new::before {
+      background: linear-gradient(90deg, #4ecdc4, #6de5dd);
+    }
+
+    .regime-card-enhanced:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .regime-card-enhanced:hover::before {
+      opacity: 1;
+    }
+
+    .regime-card-enhanced .regime-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .regime-icon-enhanced {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      flex-shrink: 0;
+    }
+
+    .regime-card-enhanced.old .regime-icon-enhanced {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 142, 142, 0.1));
+      color: #ff6b6b;
+      border: 2px solid rgba(255, 107, 107, 0.3);
+    }
+
+    .regime-card-enhanced.new .regime-icon-enhanced {
+      background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(109, 229, 221, 0.1));
+      color: #4ecdc4;
+      border: 2px solid rgba(78, 205, 196, 0.3);
+    }
+
+    .regime-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .regime-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Tax Slabs */
+    .tax-slabs {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 40px 0;
+      border: 1px solid var(--border-color);
+    }
+
+    .slabs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .slab-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .slab-item:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124, 108, 255, 0.3);
+      background: rgba(124, 108, 255, 0.05);
+    }
+
+    .slab-range {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .slab-rate {
+      font-size: 28px;
+      font-weight: 800;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+    }
+
+    .slab-regime {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ITR Forms */
+    .itr-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      margin: 40px 0;
+    }
+
+    .itr-card-enhanced {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+
+    .itr-card-enhanced::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: var(--primary-gradient);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .itr-card-enhanced:hover {
+      transform: translateY(-8px);
+      border-color: rgba(124, 108, 255, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .itr-card-enhanced:hover::before {
+      opacity: 1;
+    }
+
+    .itr-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .itr-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(124, 108, 255, 0.1);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #7c6cff;
+    }
+
+    .itr-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      flex: 1;
+      margin-left: 15px;
+    }
+
+    .itr-link {
+      color: #7c6cff;
+      font-size: 20px;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: all 0.3s ease;
+    }
+
+    .itr-card-enhanced:hover .itr-link {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .itr-description {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .itr-eligibility {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(124, 108, 255, 0.1);
+      border-radius: 20px;
+      font-size: 13px;
+      color: #b0a8ff;
+      font-weight: 500;
+    }
+
+    /* Filing Process */
+    .process-timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 50px auto;
+    }
+
+    .process-timeline::before {
+      content: '';
+      position: absolute;
+      left: 30px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, #7c6cff, transparent);
+    }
+
+    .process-step {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #7c6cff, #5b8cff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 24px;
+      color: white;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 10px 30px rgba(124, 108, 255, 0.4);
+    }
+
+    .step-content {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      padding: 25px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .step-content:hover {
+      transform: translateX(10px);
+      border-color: rgba(124, 108, 255, 0.3);
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .step-description {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* Documents Grid */
+    .documents-grid-enhanced {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin: 40px 0;
+    }
+
+    .document-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 18px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .document-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, rgba(124, 108, 255, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .document-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(124, 108, 255, 0.3);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .document-card:hover::before {
+      opacity: 1;
+    }
+
+    .document-icon-enhanced {
+      width: 70px;
+      height: 70px;
+      background: rgba(124, 108, 255, 0.1);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+      color: #7c6cff;
+      position: relative;
+      z-index: 1;
+    }
+
+    .document-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      position: relative;
+      z-index: 1;
+    }
+
+    .document-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Deductions - Changed from green to purple */
+    .deductions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin: 40px 0;
+    }
+
+    .deduction-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 18px;
+      padding: 25px;
+      border-left: 5px solid #7c6cff; /* Changed from #32ffb4 to #7c6cff */
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .deduction-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124, 108, 255, 0.3); /* Changed from rgba(50, 255, 180, 0.3) */
+      box-shadow: 0 15px 40px rgba(124, 108, 255, 0.15); /* Changed from rgba(50, 255, 180, 0.15) */
+    }
+
+    .deduction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .deduction-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #7c6cff; /* Changed from #32ffb4 to #7c6cff */
+    }
+
+    .deduction-limit {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c6cff, #5b8cff); /* Changed from green to purple gradient */
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .deduction-details {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-hero {
+        margin: 15px;
+        padding: 35px 25px;
+      }
+      
+      .dashboard-hero h1 {
+        font-size: 32px;
+      }
+      
+      .tax-hub-container {
+        margin: 0 20px 40px;
+      }
+      
+      .hub-header h2 {
+        font-size: 28px;
+      }
+      
+      .regime-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .enhanced-tabs {
+        flex-direction: column;
+      }
+      
+      .enhanced-tab {
+        justify-content: center;
+      }
+      
+      .itr-grid,
+      .documents-grid-enhanced,
+      .deductions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard-hero h1 {
+        font-size: 28px;
+      }
+      
+      .dashboard-hero p {
+        font-size: 16px;
+      }
+    }
+
+    /* Feature item styling */
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+    
+    .feature-item i {
+      margin-top: 3px;
+      flex-shrink: 0;
+    }
+    
+    .feature-item span {
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="dark-bg">
+
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="brand">💼 TaxBuddy</span>
+  </div>
+
+  <div class="nav-center">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="tax-calculator.html">Tax Calculator</a>
+    <a href="investment.html">Investment Planner</a>
+    <a href="analysis.html">Tax Analysis</a>
+  </div>
+
+  <div class="nav-right">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<!-- Enhanced Dashboard Header -->
+<section class="dashboard-hero">
+  <div class="hero-content">
+    <h1>Welcome back to TaxBuddy!</h1>
+    <p>Your comprehensive tax information hub. Access everything you need to know about tax regimes, ITR filing, deductions, and more in one place.</p>
+  </div>
+</section>
+
+<!-- Tax Information Hub -->
+<div class="tax-hub-container">
+  <!-- Hub Header -->
+  <div class="hub-header">
+    <h2>Tax Information Hub</h2>
+    <p>Everything you need to know about Indian income tax in one comprehensive guide</p>
+  </div>
+
+  <!-- Enhanced Tabs -->
+  <div class="enhanced-tabs">
+    <div class="enhanced-tab active" onclick="switchTab('regime')">
+      <i class="fas fa-balance-scale tab-icon"></i>
+      Tax Regimes
+    </div>
+    <div class="enhanced-tab" onclick="switchTab('itr')">
+      <i class="fas fa-file-alt tab-icon"></i>
+      ITR Forms
+    </div>
+    <div class="enhanced-tab" onclick="switchTab('process')">
+      <i class="fas fa-tasks tab-icon"></i>
+      Filing Process
+    </div>
+    <div class="enhanced-tab" onclick="switchTab('documents')">
+      <i class="fas fa-folder-open tab-icon"></i>
+      Documents
+    </div>
+    <div class="enhanced-tab" onclick="switchTab('deductions')">
+      <i class="fas fa-percentage tab-icon"></i>
+      Deductions
+    </div>
+  </div>
+
+  <!-- Tax Regimes Content -->
+  <div id="regime" class="hub-content-section active">
+    <div class="content-header">
+      <h3>Tax Regimes: Old vs New</h3>
+      <p>Choose the regime that maximizes your savings. You can switch regimes each financial year.</p>
+    </div>
+
+    <div class="regime-grid">
+      <!-- Old Regime -->
+      <div class="regime-card-enhanced old">
+        <div class="regime-header">
+          <div class="regime-icon-enhanced">
+            <i class="fas fa-landmark"></i>
+          </div>
+          <div>
+            <h3 class="regime-title">Old Tax Regime</h3>
+            <p class="regime-subtitle">With Deductions & Exemptions</p>
+          </div>
+        </div>
+        
+        <div class="regime-features">
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>Allows all deductions (80C, 80D, HRA, LTA, etc.)</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>Standard Deduction: ₹50,000 for salaried individuals</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>HRA exemption, LTA, interest on home loan deductions</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>Deductions for donations (80G), education loan (80E)</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-times-circle" style="color: #ff6b6b;"></i>
+            <span>Higher compliance & documentation required</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-lightbulb" style="color: #7c6cff;"></i>
+            <span><strong>Best for:</strong> Those with high investments & multiple deductions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Regime -->
+      <div class="regime-card-enhanced new">
+        <div class="regime-header">
+          <div class="regime-icon-enhanced">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div>
+            <h3 class="regime-title">New Tax Regime</h3>
+            <p class="regime-subtitle">Simplified with Lower Rates</p>
+          </div>
+        </div>
+        
+        <div class="regime-features">
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>Simplified tax structure with fewer slabs</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>Lower tax rates for most income brackets</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle" style="color: #32ffb4;"></i>
+            <span>Standard Deduction: ₹75,000 for salaried individuals</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-times-circle" style="color: #ff6b6b;"></i>
+            <span>Most exemptions and deductions not allowed</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-times-circle" style="color: #ff6b6b;"></i>
+            <span>No HRA, LTA, 80C, 80D, 80E deductions</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-lightbulb" style="color: #7c6cff;"></i>
+            <span><strong>Best for:</strong> Salaried with minimal investments & deductions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Slabs -->
+    <div class="tax-slabs">
+      <h3 style="text-align: center; margin-bottom: 30px; font-size: 24px;">Tax Slabs Comparison (FY 2023-24)</h3>
+      <div class="slabs-grid">
+        <div class="slab-item">
+          <div class="slab-range">₹0 - ₹3,00,000</div>
+          <div class="slab-rate">0%</div>
+          <div class="slab-regime">Both Regimes</div>
+        </div>
+        <div class="slab-item">
+          <div class="slab-range">₹3L - ₹6,00,000</div>
+          <div class="slab-rate">5%</div>
+          <div class="slab-regime">New: 5% | Old: 5%</div>
+        </div>
+        <div class="slab-item">
+          <div class="slab-range">₹6L - ₹9,00,000</div>
+          <div class="slab-rate">10%</div>
+          <div class="slab-regime">New: 10% | Old: 20%</div>
+        </div>
+        <div class="slab-item">
+          <div class="slab-range">₹9L - ₹12,00,000</div>
+          <div class="slab-rate">15%</div>
+          <div class="slab-regime">New: 15% | Old: 20%</div>
+        </div>
+        <div class="slab-item">
+          <div class="slab-range">₹12L - ₹15,00,000</div>
+          <div class="slab-rate">20%</div>
+          <div class="slab-regime">New: 20% | Old: 30%</div>
+        </div>
+        <div class="slab-item">
+          <div class="slab-range">Above ₹15,00,000</div>
+          <div class="slab-rate">30%</div>
+          <div class="slab-regime">Both Regimes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITR Forms Content -->
+  <div id="itr" class="hub-content-section">
+    <div class="content-header">
+      <h3>Income Tax Return Forms</h3>
+      <p>Select the appropriate ITR form based on your income sources and category</p>
+    </div>
+
+    <div class="itr-grid">
+      <!-- ITR-1 -->
+      <a href="https://www.incometax.gov.in/iec/foportal/" target="_blank" class="itr-card-enhanced">
+        <div class="itr-header">
+          <div class="itr-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <h3 class="itr-title">ITR-1 (Sahaj)</h3>
+          <div class="itr-link">
+            <i class="fas fa-external-link-alt"></i>
+          </div>
+        </div>
+        <p class="itr-description">
+          For resident individuals with salary/pension income, one house property, 
+          and income from other sources (interest, dividends up to ₹5,000).
+        </p>
+        <div class="itr-eligibility">
+          <i class="fas fa-check-circle"></i>
+          Salary up to ₹50 lakhs | No business income
+        </div>
+      </a>
+
+      <!-- ITR-2 -->
+      <a href="https://www.incometax.gov.in/iec/foportal/" target="_blank" class="itr-card-enhanced">
+        <div class="itr-header">
+          <div class="itr-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3 class="itr-title">ITR-2</h3>
+          <div class="itr-link">
+            <i class="fas fa-external-link-alt"></i>
+          </div>
+        </div>
+        <p class="itr-description">
+          For individuals & HUFs not having income from business or profession. 
+          Includes capital gains, foreign assets/income, and multiple house properties.
+        </p>
+        <div class="itr-eligibility">
+          <i class="fas fa-check-circle"></i>
+          No business income | Capital gains applicable
+        </div>
+      </a>
+
+      <!-- ITR-3 -->
+      <a href="https://www.incometax.gov.in/iec/foportal/" target="_blank" class="itr-card-enhanced">
+        <div class="itr-header">
+          <div class="itr-icon">
+            <i class="fas fa-briefcase"></i>
+          </div>
+          <h3 class="itr-title">ITR-3</h3>
+          <div class="itr-link">
+            <i class="fas fa-external-link-alt"></i>
+          </div>
+        </div>
+        <p class="itr-description">
+          For individuals & HUFs having income from business or profession. 
+          Includes partnership firms, professionals, and presumptive taxation.
+        </p>
+        <div class="itr-eligibility">
+          <i class="fas fa-check-circle"></i>
+          Business/profession income | Partnership firms
+        </div>
+      </a>
+
+      <!-- ITR-4 -->
+      <a href="https://www.incometax.gov.in/iec/foportal/" target="_blank" class="itr-card-enhanced">
+        <div class="itr-header">
+          <div class="itr-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <h3 class="itr-title">ITR-4 (Sugam)</h3>
+          <div class="itr-link">
+            <i class="fas fa-external-link-alt"></i>
+          </div>
+        </div>
+        <p class="itr-description">
+          For individuals, HUFs and firms with presumptive income from business 
+          & profession under sections 44AD, 44ADA, and 44AE.
+        </p>
+        <div class="itr-eligibility">
+          <i class="fas fa-check-circle"></i>
+          Presumptive taxation | Turnover up to ₹2 crores
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Filing Process Content -->
+  <div id="process" class="hub-content-section">
+    <div class="content-header">
+      <h3>ITR Filing Process</h3>
+      <p>Step-by-step guide to file your Income Tax Return accurately and efficiently</p>
+    </div>
+
+    <div class="process-timeline">
+      <!-- Step 1 -->
+      <div class="process-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4 class="step-title">Gather Documents</h4>
+          <p class="step-description">
+            Collect Form 16 (from employer), bank statements, investment proofs (80C, 80D), 
+            rent receipts, home loan interest certificate, and previous year's ITR copy.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="process-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4 class="step-title">Choose Correct ITR Form</h4>
+          <p class="step-description">
+            Select appropriate ITR form based on your income sources. Most salaried individuals 
+            use ITR-1 (Sahaj). Business owners and professionals need ITR-3 or ITR-4.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="process-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4 class="step-title">Compute Total Income</h4>
+          <p class="step-description">
+            Calculate income under all five heads: Salary, House Property, Business/Profession, 
+            Capital Gains, and Other Sources. Consider deductions and exemptions.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="process-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h4 class="step-title">Claim Deductions</h4>
+          <p class="step-description">
+            Apply eligible deductions under Chapter VI-A (80C, 80D, 80E, etc.), HRA exemption, 
+            standard deduction, and other applicable tax-saving provisions.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="process-step">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h4 class="step-title">Calculate Tax Liability</h4>
+          <p class="step-description">
+            Compute final tax payable after considering TDS, advance tax paid, and tax 
+            deducted at source. Determine if you need to pay additional tax or get a refund.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="process-step">
+        <div class="step-number">6</div>
+        <div class="step-content">
+          <h4 class="step-title">E-Verify & Submit</h4>
+          <p class="step-description">
+            E-verify using Aadhaar OTP, net banking, or send signed ITR-V to CPC Bengaluru 
+            within 120 days. Keep acknowledgment for future reference.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documents Content -->
+  <div id="documents" class="hub-content-section">
+    <div class="content-header">
+      <h3>Required Documents</h3>
+      <p>Essential documents for hassle-free ITR filing and verification</p>
+    </div>
+
+    <div class="documents-grid-enhanced">
+      <!-- PAN Card -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <h4 class="document-title">PAN Card</h4>
+        <p class="document-description">Permanent Account Number - Primary tax identification</p>
+      </div>
+
+      <!-- Form 16 -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <h4 class="document-title">Form 16/16A</h4>
+        <p class="document-description">TDS certificates from employer & other deductors</p>
+      </div>
+
+      <!-- Bank Statements -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-university"></i>
+        </div>
+        <h4 class="document-title">Bank Statements</h4>
+        <p class="document-description">All bank accounts including savings & fixed deposits</p>
+      </div>
+
+      <!-- Investment Proofs -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h4 class="document-title">Investment Proofs</h4>
+        <p class="document-description">80C, 80D, NPS, ELSS, LIC, PPF investment receipts</p>
+      </div>
+
+      <!-- Property Documents -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-home"></i>
+        </div>
+        <h4 class="document-title">Property Documents</h4>
+        <p class="document-description">Home loan interest certificate, rent agreement, receipts</p>
+      </div>
+
+      <!-- Capital Gains -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-coins"></i>
+        </div>
+        <h4 class="document-title">Capital Gains</h4>
+        <p class="document-description">Sale/purchase documents of stocks, mutual funds, property</p>
+      </div>
+
+      <!-- Aadhaar Card -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h4 class="document-title">Aadhaar Card</h4>
+        <p class="document-description">Linked with PAN for e-verification & authentication</p>
+      </div>
+
+      <!-- Previous ITR -->
+      <div class="document-card">
+        <div class="document-icon-enhanced">
+          <i class="fas fa-receipt"></i>
+        </div>
+        <h4 class="document-title">Previous ITR</h4>
+        <p class="document-description">Last year's return for reference & consistency</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deductions Content -->
+  <div id="deductions" class="hub-content-section">
+    <div class="content-header">
+      <h3>Popular Tax Deductions</h3>
+      <p>Maximize your tax savings with these commonly used deductions</p>
+    </div>
+
+    <div class="deductions-grid">
+      <!-- Section 80C -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">Section 80C</h4>
+          <div class="deduction-limit">₹1.5L</div>
+        </div>
+        <p class="deduction-details">
+          Investments in PPF, ELSS, LIC, NSC, 5-year FD, Home Loan Principal, 
+          Sukanya Samriddhi, EPF, Tuition fees.
+        </p>
+      </div>
+
+      <!-- Section 80D -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">Section 80D</h4>
+          <div class="deduction-limit">₹1L</div>
+        </div>
+        <p class="deduction-details">
+          Health insurance premium for self (₹25,000), parents (₹25,000), 
+          senior citizens (₹50,000 each). Preventive health check-ups (₹5,000).
+        </p>
+      </div>
+
+      <!-- HRA Exemption -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">HRA Exemption</h4>
+          <div class="deduction-limit">Actual</div>
+        </div>
+        <p class="deduction-details">
+          Minimum of: 1) Actual HRA received, 2) 50% of salary (metro) or 40% (non-metro), 
+          3) Rent paid minus 10% of salary. Rent receipts required.
+        </p>
+      </div>
+
+      <!-- Section 24(b) -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">Section 24(b)</h4>
+          <div class="deduction-limit">₹2L</div>
+        </div>
+        <p class="deduction-details">
+          Interest on home loan for self-occupied property (max ₹2 lakhs). 
+          No limit for let-out property. Loan must be for purchase/construction.
+        </p>
+      </div>
+
+      <!-- NPS 80CCD(1B) -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">NPS 80CCD(1B)</h4>
+          <div class="deduction-limit">₹50K</div>
+        </div>
+        <p class="deduction-details">
+          Additional ₹50,000 deduction for NPS investment over and above ₹1.5 lakhs 
+          of Section 80C. Available to all individuals.
+        </p>
+      </div>
+
+      <!-- Section 80E -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">Section 80E</h4>
+          <div class="deduction-limit">No Limit</div>
+        </div>
+        <p class="deduction-details">
+          Interest on education loan for higher education (self, spouse, children). 
+          Available for 8 years from commencement of repayment. No upper limit.
+        </p>
+      </div>
+
+      <!-- Standard Deduction -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">Standard Deduction</h4>
+          <div class="deduction-limit">₹75K</div>
+        </div>
+        <p class="deduction-details">
+          New regime: ₹75,000 | Old regime: ₹50,000. Available to all salaried individuals 
+          and pensioners. No proof required.
+        </p>
+      </div>
+
+      <!-- Section 80G -->
+      <div class="deduction-card">
+        <div class="deduction-header">
+          <h4 class="deduction-name">Section 80G</h4>
+          <div class="deduction-limit">50-100%</div>
+        </div>
+        <p class="deduction-details">
+          Donations to approved charities and institutions. 50% or 100% of donation amount 
+          deductible depending on the institution.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+<script src="js/logout.js"></script>
+
+<script>
+  // Tab switching functionality
+  function switchTab(tabName) {
+    // Remove active class from all tabs
+    document.querySelectorAll('.enhanced-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    // Remove active class from all content sections
+    document.querySelectorAll('.hub-content-section').forEach(content => {
+      content.classList.remove('active');
+    });
+    
+    // Add active class to clicked tab
+    event.currentTarget.classList.add('active');
+    
+    // Add active class to corresponding content section
+    document.getElementById(tabName).classList.add('active');
+  }
+</script>
+
+</body>
+</html>

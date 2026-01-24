@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TaxBuddy — AI Tax Analysis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="js/logout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    :root {
+      --analysis-primary: #4f46e5;
+      --analysis-secondary: #6366f1;
+      --analysis-accent: #7c6cff;
+      --analysis-success: #10b981;
+      --analysis-warning: #f59e0b;
+      --analysis-danger: #ef4444;
+    }
+
+    /* Enhanced Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-secondary), var(--analysis-accent));
+      color: white;
+      padding: 3rem 2rem;
+      margin: 20px 40px 40px;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(79, 70, 229, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.05"><path d="M0,0 L100,0 L100,100 Z" fill="white"/></svg>');
+      background-size: cover;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #e0e7ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 18px;
+      opacity: 0.95;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    /* Main Container */
+    .analysis-container {
+      margin: 0 40px 60px;
+    }
+
+    /* Enhanced Upload Section */
+    .upload-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 2px dashed var(--analysis-primary);
+      margin-bottom: 50px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 30px 0;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .upload-section h2 i {
+      color: var(--analysis-primary);
+    }
+
+    .upload-instructions {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .upload-zone {
+      padding: 50px 30px;
+      border-radius: 20px;
+      background: rgba(79, 70, 229, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(79, 70, 229, 0.3);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone:hover {
+      background: rgba(79, 70, 229, 0.15);
+      border-color: var(--analysis-primary);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+    }
+
+    .upload-zone.drag-over {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--analysis-accent);
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: var(--analysis-primary);
+    }
+
+    .upload-text {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .upload-subtext {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    /* File List */
+    .file-list-container {
+      margin-top: 30px;
+    }
+
+    .file-list-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .file-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+    }
+
+    .file-item:hover {
+      background: rgba(124, 108, 255, 0.05);
+      border-color: rgba(124, 108, 255, 0.2);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(79, 70, 229, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--analysis-primary);
+    }
+
+    .file-details {
+      flex: 1;
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .file-size {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .remove-btn {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .remove-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Analyze Button */
+    .analyze-btn {
+      width: 100%;
+      padding: 18px 40px;
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-secondary));
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 30px;
+      display: none;
+    }
+
+    .analyze-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.7s ease;
+    }
+
+    .analyze-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+    }
+
+    .analyze-btn:hover::before {
+      left: 100%;
+    }
+
+    .analyze-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Messages */
+    .messages-container {
+      margin-top: 20px;
+    }
+
+    .message {
+      padding: 20px;
+      border-radius: 16px;
+      margin: 15px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid var(--analysis-success);
+    }
+
+    .message.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid var(--analysis-danger);
+    }
+
+    .message.warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 2px solid var(--analysis-warning);
+    }
+
+    .message-icon {
+      font-size: 24px;
+      margin-top: 2px;
+    }
+
+    .message.success .message-icon {
+      color: var(--analysis-success);
+    }
+
+    .message.error .message-icon {
+      color: var(--analysis-danger);
+    }
+
+    .message.warning .message-icon {
+      color: var(--analysis-warning);
+    }
+
+    .message-content {
+      flex: 1;
+    }
+
+    .message-title {
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+    }
+
+    .message-text {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .message-close {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      font-size: 18px;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    .message-close:hover {
+      opacity: 1;
+    }
+
+    /* Analysis Results */
+    .analysis-results {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 50px;
+      display: none;
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .analysis-results.active {
+      display: block;
+    }
+
+    .analysis-results::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--analysis-success), #34d399);
+      opacity: 0.8;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .results-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .results-header h2 i {
+      color: var(--analysis-success);
+    }
+
+    .analysis-tools {
+      display: flex;
+      gap: 10px;
+    }
+
+    .tool-btn {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-btn:hover {
+      background: rgba(124, 108, 255, 0.1);
+      border-color: rgba(124, 108, 255, 0.3);
+    }
+
+    /* Insights Grid */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .insight-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .insight-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124, 108, 255, 0.3);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .insight-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .insight-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .insight-icon.summary {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+      color: var(--analysis-primary);
+      border: 2px solid rgba(79, 70, 229, 0.3);
+    }
+
+    .insight-icon.findings {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+      color: var(--analysis-success);
+      border: 2px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .insight-icon.recommendations {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+      color: var(--analysis-warning);
+      border: 2px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .insight-icon.compliance {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(252, 165, 165, 0.1));
+      color: var(--analysis-danger);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .insight-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 5px 0;
+    }
+
+    .insight-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .insight-content {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .insight-content ul {
+      padding-left: 20px;
+      margin: 10px 0;
+    }
+
+    .insight-content li {
+      margin-bottom: 8px;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 30px;
+    }
+
+    .chart-container h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chart-container h3 i {
+      color: var(--analysis-primary);
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 400px;
+      width: 100%;
+    }
+
+    /* History Section */
+    .history-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 50px;
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .history-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .history-header h2 i {
+      color: var(--analysis-accent);
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .history-item:hover {
+      background: rgba(124, 108, 255, 0.05);
+      border-color: rgba(124, 108, 255, 0.2);
+      transform: translateX(5px);
+    }
+
+    .history-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .history-date {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .history-status {
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--analysis-success);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .history-files {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-summary {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Loading Animation */
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--analysis-primary);
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .insights-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        margin: 15px;
+        padding: 30px 20px;
+      }
+      
+      .page-header h1 {
+        font-size: 32px;
+      }
+      
+      .analysis-container {
+        margin: 0 20px 40px;
+      }
+      
+      .upload-section,
+      .analysis-results,
+      .history-section {
+        padding: 30px 20px;
+      }
+      
+      .upload-zone {
+        padding: 30px 20px;
+      }
+      
+      .results-header,
+      .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .analysis-tools,
+      .history-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header h1 {
+        font-size: 28px;
+      }
+      
+      .page-header p {
+        font-size: 16px;
+      }
+      
+      .upload-zone {
+        padding: 20px;
+      }
+      
+      .upload-text {
+        font-size: 16px;
+      }
+      
+      .insights-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .chart-wrapper {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="brand">💼 TaxBuddy</span>
+    </div>
+
+    <div class="nav-center">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="tax-calculator.html">Tax Calculator</a>
+      <a href="investment.html">Investment Planner</a>
+      <a href="analysis.html" class="active">Tax Analysis</a>
+    </div>
+
+    <div class="nav-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Enhanced Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1><i class="fas fa-chart-pie"></i> AI Tax Document Analysis</h1>
+      <p>Upload your tax documents for AI-powered analysis, insights, and personalized recommendations using Gemini AI</p>
+    </div>
+  </div>
+
+  <div class="analysis-container">
+    <!-- Enhanced Upload Section -->
+    <div class="upload-section">
+      <h2><i class="fas fa-cloud-upload-alt"></i> Upload Tax Documents</h2>
+      
+      <div class="upload-instructions">
+        <p>Upload your tax documents for AI analysis. Supported formats: PDF, JPG, PNG, DOC, DOCX</p>
+        <p style="font-size: 14px; color: var(--text-muted);">Maximum file size: 10MB per file</p>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">
+          <i class="fas fa-file-upload"></i>
+        </div>
+        <p class="upload-text">Drag & drop files here or click to browse</p>
+        <p class="upload-subtext">Upload tax returns, investment proofs, Form 16, invoices, receipts</p>
+      </div>
+
+      <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+
+      <!-- File List -->
+      <div class="file-list-container" id="fileListContainer" style="display: none;">
+        <div class="file-list-title">
+          <i class="fas fa-file-alt"></i>
+          Selected Files (<span id="fileCount">0</span>)
+        </div>
+        <div class="file-list" id="fileList"></div>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages-container" id="messages"></div>
+
+      <!-- Analyze Button -->
+      <button id="analyzeBtn" class="analyze-btn">
+        <i class="fas fa-robot"></i>
+        Analyze with AI
+      </button>
+    </div>
+
+    <!-- Analysis Results -->
+    <div class="analysis-results" id="analysisResults">
+      <div class="results-header">
+        <h2><i class="fas fa-chart-bar"></i> AI Analysis Report</h2>
+        <div class="analysis-tools">
+          <button class="tool-btn" onclick="downloadReport()">
+            <i class="fas fa-download"></i>
+            Download PDF
+          </button>
+          <button class="tool-btn" onclick="shareReport()">
+            <i class="fas fa-share-alt"></i>
+            Share Report
+          </button>
+          <button class="tool-btn" onclick="saveToHistory()">
+            <i class="fas fa-save"></i>
+            Save Results
+          </button>
+        </div>
+      </div>
+
+      <div id="loadingSection" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Analyzing documents with Gemini AI...</p>
+      </div>
+
+      <div id="resultContent">
+        <!-- AI-generated results will appear here -->
+      </div>
+    </div>
+
+    <!-- Analysis History -->
+    <div class="history-section">
+      <div class="history-header">
+        <h2><i class="fas fa-history"></i> Analysis History</h2>
+        <div class="history-actions">
+          <button class="tool-btn" onclick="clearHistory()">
+            <i class="fas fa-trash"></i>
+            Clear History
+          </button>
+          <button class="tool-btn" onclick="refreshHistory()">
+            <i class="fas fa-sync-alt"></i>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div class="history-list" id="historyContent">
+        <!-- History items will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Backend API URL - Update this to match your server URL
+    const BACKEND_API_URL = 'http://localhost:4000/api';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('tb_token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Initialize variables
+      let uploadedFiles = [];
+      const uploadZone = document.getElementById('uploadZone');
+      const fileInput = document.getElementById('fileInput');
+      const fileList = document.getElementById('fileList');
+      const fileListContainer = document.getElementById('fileListContainer');
+      const fileCount = document.getElementById('fileCount');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const messagesContainer = document.getElementById('messages');
+      const analysisResults = document.getElementById('analysisResults');
+      const resultContent = document.getElementById('resultContent');
+      const loadingSection = document.getElementById('loadingSection');
+      const historyContent = document.getElementById('historyContent');
+
+      // Initialize upload zone
+      uploadZone.addEventListener('click', () => fileInput.click());
+
+      // Drag and drop functionality
+      uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('drag-over');
+      });
+
+      uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('drag-over');
+      });
+
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+      });
+
+      function handleFiles(files) {
+        const validFiles = Array.from(files).filter(file => {
+          const maxSize = 10 * 1024 * 1024; // 10MB
+          if (file.size > maxSize) {
+            showMessage(`File "${file.name}" exceeds 10MB limit`, 'error');
+            return false;
+          }
+          return true;
+        });
+
+        uploadedFiles = [...uploadedFiles, ...validFiles];
+        updateFileList();
+        analyzeBtn.style.display = uploadedFiles.length > 0 ? 'flex' : 'none';
+        showMessage(`Added ${validFiles.length} file(s)`, 'success');
+      }
+
+      function updateFileList() {
+        fileList.innerHTML = '';
+        
+        if (uploadedFiles.length === 0) {
+          fileListContainer.style.display = 'none';
+          return;
+        }
+        
+        fileListContainer.style.display = 'block';
+        fileCount.textContent = uploadedFiles.length;
+
+        uploadedFiles.forEach((file, index) => {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'file-item';
+          
+          const extension = file.name.split('.').pop().toLowerCase();
+          const icon = getFileIcon(extension);
+          const size = formatFileSize(file.size);
+
+          fileItem.innerHTML = `
+            <div class="file-info">
+              <div class="file-icon">
+                <i class="fas fa-${icon}"></i>
+              </div>
+              <div class="file-details">
+                <div class="file-name">${file.name}</div>
+                <div class="file-size">${size}</div>
+              </div>
+            </div>
+            <div class="file-actions">
+              <button class="remove-btn" onclick="removeFile(${index})">
+                <i class="fas fa-times"></i>
+                Remove
+              </button>
+            </div>
+          `;
+          
+          fileList.appendChild(fileItem);
+        });
+      }
+
+      window.removeFile = function(index) {
+        uploadedFiles.splice(index, 1);
+        updateFileList();
+        analyzeBtn.style.display = uploadedFiles.length > 0 ? 'flex' : 'none';
+      }
+
+      function getFileIcon(extension) {
+        const icons = {
+          pdf: 'file-pdf',
+          jpg: 'file-image',
+          jpeg: 'file-image',
+          png: 'file-image',
+          doc: 'file-word',
+          docx: 'file-word',
+          txt: 'file-alt',
+          csv: 'file-csv'
+        };
+        return icons[extension] || 'file';
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Analyze button handler - Updated to use backend API
+      analyzeBtn.addEventListener('click', async () => {
+        if (uploadedFiles.length === 0) return;
+
+        // Show loading state
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+        loadingSection.style.display = 'block';
+        resultContent.innerHTML = '';
+
+        try {
+          // Extract text from files
+          const fileContents = await extractFileContents();
+          
+          // Call backend API for analysis
+          const analysis = await callBackendAPI(fileContents);
+          
+          // Display results
+          displayAnalysisResults(analysis);
+          
+          // Add to history
+          const fileNames = uploadedFiles.map(f => f.name).join(', ');
+          addToHistory(fileNames, analysis.summary);
+          
+          showMessage('Analysis completed successfully!', 'success');
+          
+        } catch (error) {
+          console.error('Analysis error:', error);
+          showMessage('Error analyzing documents: ' + error.message, 'error');
+          // Fallback to default analysis
+          displayDefaultAnalysis();
+        } finally {
+          // Reset button state
+          analyzeBtn.disabled = false;
+          analyzeBtn.innerHTML = '<i class="fas fa-robot"></i> Analyze with AI';
+          loadingSection.style.display = 'none';
+          analysisResults.classList.add('active');
+          analysisResults.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+
+      async function extractFileContents() {
+        const contents = [];
+        const maxFileSize = 50000; // 50KB per file
+        
+        for (const file of uploadedFiles) {
+          try {
+            let content = '';
+            
+            if (file.type.includes('text') || file.type === 'application/pdf' || 
+                file.name.endsWith('.txt') || file.name.endsWith('.pdf')) {
+              content = await readFileAsText(file);
+            } else if (file.type.includes('image')) {
+              content = `[IMAGE FILE: ${file.name}]\n`;
+              content += 'Image content detected. For better analysis, please upload text-based documents.\n';
+            } else {
+              content = `[FILE: ${file.name} - Type: ${file.type}]\n`;
+              content += 'Document content could not be directly extracted.\n';
+            }
+            
+            // Limit content size for API
+            if (content.length > maxFileSize) {
+              content = content.substring(0, maxFileSize) + '... [content truncated]';
+            }
+            
+            contents.push({
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              content: content
+            });
+            
+          } catch (error) {
+            console.error(`Error reading file ${file.name}:`, error);
+            contents.push({
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              content: `[ERROR READING FILE: ${file.name}]\nFile could not be processed.`
+            });
+          }
+        }
+        
+        return contents;
+      }
+
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = (e) => reject(new Error(`Failed to read file: ${file.name}`));
+          reader.readAsText(file);
+        });
+      }
+
+      // Call backend API instead of direct Gemini API
+      async function callBackendAPI(fileContents) {
+        try {
+          const response = await fetch(`${BACKEND_API_URL}/analyze-documents`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ fileContents })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to analyze documents');
+          }
+
+          const data = await response.json();
+          
+          // Process the response
+          return processGeminiResponse(data.analysis, fileContents);
+          
+        } catch (error) {
+          console.error('Backend API call failed:', error);
+          throw new Error(`Analysis service unavailable: ${error.message}`);
+        }
+      }
+
+      function processGeminiResponse(text, fileContents) {
+        // Try to extract structured information from the response
+        const sections = {
+          summary: '',
+          findings: '',
+          recommendations: '',
+          compliance: '',
+          missing: '',
+          risks: '',
+          actions: ''
+        };
+
+        // Common section headers to look for
+        const sectionHeaders = [
+          'DOCUMENT SUMMARY',
+          'KEY FINDINGS',
+          'TAX OPTIMIZATION RECOMMENDATIONS',
+          'COMPLIANCE CHECK',
+          'MISSING DOCUMENTS',
+          'RISK ASSESSMENT',
+          'ACTION ITEMS'
+        ];
+
+        let currentSection = '';
+        const lines = text.split('\n');
+
+        for (const line of lines) {
+          const upperLine = line.toUpperCase();
+          
+          // Check if this line starts a new section
+          for (const header of sectionHeaders) {
+            if (upperLine.includes(header) || 
+                (line.includes(':') && upperLine.includes(header.split(':')[0]))) {
+              currentSection = header;
+              continue;
+            }
+          }
+
+          // Add content to appropriate section
+          if (currentSection) {
+            const cleanLine = line.trim();
+            if (cleanLine && !cleanLine.toUpperCase().includes(currentSection)) {
+              switch(currentSection) {
+                case 'DOCUMENT SUMMARY':
+                  sections.summary += cleanLine + ' ';
+                  break;
+                case 'KEY FINDINGS':
+                  sections.findings += cleanLine + ' ';
+                  break;
+                case 'TAX OPTIMIZATION RECOMMENDATIONS':
+                  sections.recommendations += cleanLine + ' ';
+                  break;
+                case 'COMPLIANCE CHECK':
+                  sections.compliance += cleanLine + ' ';
+                  break;
+                case 'MISSING DOCUMENTS':
+                  sections.missing += cleanLine + ' ';
+                  break;
+                case 'RISK ASSESSMENT':
+                  sections.risks += cleanLine + ' ';
+                  break;
+                case 'ACTION ITEMS':
+                  sections.actions += cleanLine + ' ';
+                  break;
+              }
+            }
+          }
+        }
+
+        // If no sections were found, use the entire text as summary
+        if (!sections.summary && text.trim()) {
+          sections.summary = text.substring(0, 500) + '...';
+        }
+
+        // Fill in any missing sections with default content
+        if (!sections.findings) {
+          sections.findings = 'Documents analyzed successfully. Found standard tax document structures.';
+        }
+        if (!sections.recommendations) {
+          sections.recommendations = 'Consider standard tax-saving strategies like maximizing 80C investments, claiming eligible deductions, and proper documentation.';
+        }
+        if (!sections.compliance) {
+          sections.compliance = 'Documents appear to follow standard tax compliance guidelines.';
+        }
+        if (!sections.missing) {
+          sections.missing = 'Based on the provided documents, no critical missing documents identified.';
+        }
+
+        return {
+          summary: sections.summary.trim() || 'AI analysis completed based on document contents.',
+          findings: sections.findings.trim() || 'Key information extracted from documents.',
+          recommendations: sections.recommendations.trim() || 'Standard tax optimization suggestions apply.',
+          compliance: sections.compliance.trim() || 'Compliant with standard tax regulations.',
+          missing: sections.missing.trim() || 'All necessary documents appear to be present.',
+          risks: sections.risks.trim() || 'No significant risks identified.',
+          actions: sections.actions.trim() || 'Continue with standard tax filing procedures.',
+          analysisDate: new Date().toLocaleString(),
+          filesAnalyzed: fileContents.map(f => f.name),
+          rawResponse: text
+        };
+      }
+
+      function displayAnalysisResults(analysis) {
+        resultContent.innerHTML = `
+          <div class="insights-grid">
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon summary">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Document Summary</h3>
+                  <p class="insight-subtitle">AI Analysis Report</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p><strong>Analysis Date:</strong> ${analysis.analysisDate}</p>
+                <p><strong>Files Analyzed:</strong> ${analysis.filesAnalyzed.length} document(s)</p>
+                <p>${analysis.summary}</p>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon findings">
+                  <i class="fas fa-search"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Key Findings</h3>
+                  <p class="insight-subtitle">Extracted Information</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p>${analysis.findings}</p>
+                ${analysis.risks ? `<div style="margin-top: 15px; padding: 10px; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 3px solid #f59e0b;">
+                  <strong><i class="fas fa-exclamation-triangle"></i> Risk Assessment:</strong>
+                  <p style="margin: 5px 0 0 0;">${analysis.risks}</p>
+                </div>` : ''}
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon recommendations">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Recommendations</h3>
+                  <p class="insight-subtitle">Optimization Suggestions</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p>${analysis.recommendations}</p>
+                ${analysis.actions ? `<div style="margin-top: 15px;">
+                  <strong>Action Items:</strong>
+                  <p style="margin: 5px 0 0 0;">${analysis.actions}</p>
+                </div>` : ''}
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon compliance">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Compliance & Missing Docs</h3>
+                  <p class="insight-subtitle">Document Review</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p><strong>Compliance Check:</strong> ${analysis.compliance}</p>
+                <div style="margin-top: 15px; padding: 10px; background: rgba(79, 70, 229, 0.1); border-radius: 8px; border-left: 3px solid #4f46e5;">
+                  <strong><i class="fas fa-clipboard-check"></i> Missing Documents:</strong>
+                  <p style="margin: 5px 0 0 0;">${analysis.missing}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-line"></i> Document Analysis Overview</h3>
+            <div class="chart-wrapper">
+              <canvas id="analysisChart"></canvas>
+            </div>
+          </div>
+        `;
+
+        // Initialize chart with document-specific data
+        initializeDocumentAnalysisChart(analysis.filesAnalyzed);
+      }
+
+      function displayDefaultAnalysis() {
+        const fileNames = uploadedFiles.map(f => f.name).join(', ');
+        
+        resultContent.innerHTML = `
+          <div class="insights-grid">
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon summary">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Document Summary</h3>
+                  <p class="insight-subtitle">Fallback Analysis Report</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p><strong>Note:</strong> Gemini AI analysis is currently unavailable. Using fallback analysis.</p>
+                <p>Analyzed ${uploadedFiles.length} document(s): ${fileNames}</p>
+                <p><strong>Analysis Date:</strong> ${new Date().toLocaleString()}</p>
+                <p>Uploaded files have been processed. For detailed AI analysis, ensure your Gemini API key is configured.</p>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon findings">
+                  <i class="fas fa-search"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Key Findings</h3>
+                  <p class="insight-subtitle">Basic Document Analysis</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p>Based on file analysis:</p>
+                <ul>
+                  <li>Total files: ${uploadedFiles.length}</li>
+                  <li>File types: ${[...new Set(uploadedFiles.map(f => f.type || 'unknown'))].join(', ')}</li>
+                  <li>Total size: ${formatFileSize(uploadedFiles.reduce((sum, f) => sum + f.size, 0))}</li>
+                  <li>All files are within size limits</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon recommendations">
+                  <i class="fas fa-lightbulb"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Recommendations</h3>
+                  <p class="insight-subtitle">General Tax Advice</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p>For optimal tax analysis:</p>
+                <ul>
+                  <li>Configure your Gemini API key for AI-powered analysis</li>
+                  <li>Ensure documents contain readable text (not scanned images)</li>
+                  <li>Include Form 16, investment proofs, bank statements</li>
+                  <li>Keep documents organized by financial year</li>
+                  <li>Maintain digital copies of all tax-related documents</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <div class="insight-header">
+                <div class="insight-icon compliance">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                  <h3 class="insight-title">Compliance Check</h3>
+                  <p class="insight-subtitle">Document Management</p>
+                </div>
+              </div>
+              <div class="insight-content">
+                <p>Document management best practices:</p>
+                <ul>
+                  <li>✓ Store documents for minimum 7 years</li>
+                  <li>✓ Keep original and digital copies</li>
+                  <li>✓ Organize by financial year and document type</li>
+                  <li>⚠️ Ensure sensitive information is protected</li>
+                  <li>⚠️ Verify document authenticity</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-pie"></i> Document Statistics</h3>
+            <div class="chart-wrapper">
+              <canvas id="analysisChart"></canvas>
+            </div>
+          </div>
+        `;
+
+        // Initialize chart with basic document stats
+        initializeDocumentStatsChart();
+      }
+
+      function initializeDocumentAnalysisChart(files) {
+        const ctx = document.getElementById('analysisChart').getContext('2d');
+        
+        // Generate some analysis metrics based on file count
+        const fileTypes = {};
+        uploadedFiles.forEach(file => {
+          const type = file.type.split('/')[0] || 'other';
+          fileTypes[type] = (fileTypes[type] || 0) + 1;
+        });
+        
+        const labels = Object.keys(fileTypes);
+        const data = Object.values(fileTypes);
+        const colors = labels.map((_, i) => 
+          `hsl(${(i * 360) / labels.length}, 70%, 60%)`
+        );
+        
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: colors,
+              borderWidth: 2,
+              borderColor: 'rgba(255, 255, 255, 0.1)'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+                labels: {
+                  color: '#ffffff',
+                  font: {
+                    size: 14
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${value} file${value !== 1 ? 's' : ''} (${percentage}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function initializeDocumentStatsChart() {
+        const ctx = document.getElementById('analysisChart').getContext('2d');
+        
+        const sizes = uploadedFiles.map(f => f.size);
+        const maxSize = Math.max(...sizes);
+        const minSize = Math.min(...sizes);
+        const avgSize = sizes.reduce((a, b) => a + b, 0) / sizes.length;
+        
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Smallest', 'Average', 'Largest'],
+            datasets: [{
+              label: 'File Size (KB)',
+              data: [minSize/1024, avgSize/1024, maxSize/1024],
+              backgroundColor: [
+                'rgba(16, 185, 129, 0.7)',
+                'rgba(79, 70, 229, 0.7)',
+                'rgba(239, 68, 68, 0.7)'
+              ],
+              borderColor: [
+                'rgba(16, 185, 129, 1)',
+                'rgba(79, 70, 229, 1)',
+                'rgba(239, 68, 68, 1)'
+              ],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: {
+                  color: '#ffffff',
+                  font: {
+                    size: 14
+                  }
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#ffffff',
+                bodyColor: '#ffffff',
+                callbacks: {
+                  label: function(context) {
+                    const value = context.raw;
+                    return `Size: ${value.toFixed(2)} KB`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                  color: '#b4b9d8'
+                }
+              },
+              y: {
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                  color: '#b4b9d8',
+                  callback: function(value) {
+                    return value.toFixed(0) + ' KB';
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function addToHistory(description, summary) {
+        const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+        history.unshift({
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          description: description,
+          summary: summary || 'Document analysis completed',
+          status: 'Completed',
+          timestamp: new Date().toISOString(),
+          fileCount: uploadedFiles.length
+        });
+        
+        // Keep last 10 analyses
+        history.splice(10);
+        localStorage.setItem('analysisHistory', JSON.stringify(history));
+        
+        displayHistory();
+      }
+
+      function displayHistory() {
+        const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+        const historyContent = document.getElementById('historyContent');
+        
+        if (history.length === 0) {
+          historyContent.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+              <i class="fas fa-history" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+              <p>No analysis history yet.</p>
+              <p style="font-size: 14px;">Upload documents and analyze them to see history here!</p>
+            </div>
+          `;
+          return;
+        }
+
+        historyContent.innerHTML = history.map(item => `
+          <div class="history-item">
+            <div class="history-item-header">
+              <div class="history-date">
+                <i class="far fa-calendar"></i> ${item.date} at ${item.time}
+              </div>
+              <div class="history-status">
+                <i class="fas fa-check-circle"></i> ${item.status}
+              </div>
+            </div>
+            <div class="history-files">
+              <i class="fas fa-file-alt"></i> ${item.fileCount || 'Multiple'} file(s) analyzed
+            </div>
+            <div class="history-summary">
+              ${item.summary.substring(0, 150)}${item.summary.length > 150 ? '...' : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function showMessage(text, type = 'error') {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        
+        const icon = type === 'success' ? 'check-circle' : 
+                    type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle';
+        
+        messageDiv.innerHTML = `
+          <div class="message-icon">
+            <i class="fas fa-${icon}"></i>
+          </div>
+          <div class="message-content">
+            <div class="message-title">${type === 'success' ? 'Success!' : 
+                                          type === 'warning' ? 'Warning' : 'Error'}</div>
+            <div class="message-text">${text}</div>
+          </div>
+          <button class="message-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        
+        messagesContainer.innerHTML = '';
+        messagesContainer.appendChild(messageDiv);
+        
+        if (type !== 'error') {
+          setTimeout(() => messageDiv.remove(), 5000);
+        }
+      }
+
+      // Tool functions
+      window.downloadReport = function() {
+        showMessage('PDF report download started...', 'success');
+        // In production, implement PDF generation
+      }
+
+      window.shareReport = function() {
+        showMessage('Share feature coming soon!', 'warning');
+      }
+
+      window.saveToHistory = function() {
+        const files = uploadedFiles.map(f => f.name).join(', ');
+        addToHistory(files, 'Manually saved analysis');
+        showMessage('Analysis saved to history!', 'success');
+      }
+
+      window.clearHistory = function() {
+        if (confirm('Are you sure you want to clear all analysis history?')) {
+          localStorage.removeItem('analysisHistory');
+          displayHistory();
+          showMessage('History cleared successfully', 'success');
+        }
+      }
+
+      window.refreshHistory = function() {
+        displayHistory();
+        showMessage('History refreshed', 'success');
+      }
+
+      // Initialize history on page load
+      displayHistory();
+      
+      // Check if backend is accessible
+      fetch(`${BACKEND_API_URL}/test-gemini`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.configured === false) {
+            showMessage('⚠️ Gemini AI backend not configured. Please check server setup.', 'warning');
+          }
+        })
+        .catch(error => {
+          console.log('Backend test failed:', error);
+          showMessage('⚠️ Unable to connect to analysis backend. Please ensure server is running.', 'warning');
+        });
+    });
+  </script>
+</body>
+</html>

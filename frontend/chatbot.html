@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tax Assistant</title>
+  <link rel="stylesheet" href="css/chatbot.css">
+</head>
+<body>
+
+<div class="chatbot-container">
+
+  <!-- HEADER -->
+  <div class="chatbot-header">
+    <div class="bot-avatar">🤖</div>
+    <div class="bot-info">
+      <h4>Tax Assistant</h4>
+      <div class="bot-status">
+        <span class="status-dot"></span> Online
+      </div>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="chat-messages" id="chatMessages">
+
+    <div class="message ai">
+      <div class="ai-icon">AI</div>
+      <div class="bubble">
+        Hello! I am your personal Tax Assistant.<br><br>
+        I have analyzed your income. Ask me:
+        <br>“How is my HRA calculated?”
+        <br>“Which regime is better?”
+      </div>
+    </div>
+
+    <!-- Messages appended by JS -->
+  </div>
+
+  <!-- INPUT -->
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Ask a question..." />
+    <button class="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+
+  <div class="chatbot-footer">
+    AI can make mistakes. Please verify important info.
+  </div>
+
+</div>
+
+<script src="js/chatbot.js"></script>
+</body>
+</html>

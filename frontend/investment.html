@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TaxBuddy — Investment Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="js/logout.js"></script>
+  
+  <style>
+    :root {
+      --investment-primary: #4f46e5;
+      --investment-secondary: #6366f1;
+      --investment-accent: #7c6cff;
+      --investment-success: #10b981;
+      --investment-warning: #f59e0b;
+      --investment-info: #3b82f6;
+    }
+
+    /* Enhanced Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--investment-primary), var(--investment-secondary), var(--investment-accent));
+      color: white;
+      padding: 3rem 2rem;
+      margin: 20px 40px 40px;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(79, 70, 229, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.05"><path d="M0,0 L100,0 L100,100 Z" fill="white"/></svg>');
+      background-size: cover;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #e0e7ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 18px;
+      opacity: 0.95;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    /* Main Container */
+    .investment-container {
+      margin: 0 40px 60px;
+    }
+
+    /* Enhanced Form Section */
+    .form-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 50px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--investment-primary), var(--investment-accent));
+      opacity: 0.8;
+    }
+
+    .form-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .form-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--investment-primary);
+      border: 2px solid rgba(79, 70, 229, 0.3);
+    }
+
+    .investment-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group label i {
+      color: var(--investment-primary);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-group input:hover,
+    .form-group select:hover {
+      border-color: rgba(124, 108, 255, 0.3);
+      background: rgba(124, 108, 255, 0.05);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--investment-primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn-submit {
+      grid-column: 1 / -1;
+      padding: 18px 40px;
+      background: linear-gradient(135deg, var(--investment-primary), var(--investment-secondary));
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.7s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-submit:hover::before {
+      left: 100%;
+    }
+
+    .btn-submit:active {
+      transform: translateY(-2px);
+    }
+
+    /* Investment Options Grid */
+    .investment-options-section {
+      margin-bottom: 50px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .section-header h2 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #7c6cff, #5b8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-header h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--primary-gradient);
+      border-radius: 2px;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 18px;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .investment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 30px;
+    }
+
+    .investment-card {
+      background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.01) 100%);
+      border-radius: 24px;
+      padding: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .investment-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--investment-primary), var(--investment-accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .investment-card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      border-color: rgba(124, 108, 255, 0.3);
+    }
+
+    .investment-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .card-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+      color: var(--investment-primary);
+      border: 2px solid rgba(79, 70, 229, 0.3);
+    }
+
+    .card-title {
+      flex: 1;
+    }
+
+    .card-title h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: var(--text-primary);
+    }
+
+    .card-title p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .card-description {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-size: 15px;
+      margin-bottom: 25px;
+    }
+
+    .benefits-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .benefit-item {
+      background: rgba(79, 70, 229, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .benefit-item:hover {
+      background: rgba(79, 70, 229, 0.15);
+      transform: translateX(5px);
+    }
+
+    .benefit-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(79, 70, 229, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--investment-primary);
+      flex-shrink: 0;
+    }
+
+    .benefit-content {
+      flex: 1;
+    }
+
+    .benefit-content strong {
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .benefit-content span {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .investment-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border-radius: 20px;
+      font-size: 13px;
+      color: #10b981;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    .card-button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--investment-primary), var(--investment-secondary));
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s ease;
+    }
+
+    .card-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+    }
+
+    .card-button:hover::before {
+      left: 100%;
+    }
+
+    /* Recommendations Section */
+    .recommendations-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 50px;
+      display: none;
+      position: relative;
+      overflow: hidden;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .recommendations-section.active {
+      display: block;
+    }
+
+    .recommendations-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--investment-success), #34d399);
+      opacity: 0.8;
+    }
+
+    .recommendations-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .recommendations-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .recommendations-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--investment-success);
+      border: 2px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .recommendations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+    }
+
+    .recommendation-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .recommendation-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(16, 185, 129, 0.3);
+      box-shadow: 0 15px 40px rgba(16, 185, 129, 0.15);
+    }
+
+    .priority-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 6px 15px;
+      background: linear-gradient(135deg, var(--investment-primary), var(--investment-accent));
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .recommendation-header {
+      margin-bottom: 20px;
+      padding-right: 80px;
+    }
+
+    .recommendation-header h4 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: var(--text-primary);
+    }
+
+    .recommendation-header p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .recommendation-details {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .amount {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .amount-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .amount-value {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--investment-success), #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Messages */
+    #messages {
+      margin-top: 20px;
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid var(--investment-success);
+      color: #a7f3d0;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid #ef4444;
+      color: #fca5a5;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .message-icon {
+      font-size: 24px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .investment-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      }
+      
+      .recommendations-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        margin: 15px;
+        padding: 30px 20px;
+      }
+      
+      .page-header h1 {
+        font-size: 32px;
+      }
+      
+      .investment-container {
+        margin: 0 20px 40px;
+      }
+      
+      .form-section,
+      .recommendations-section {
+        padding: 30px 20px;
+      }
+      
+      .investment-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+      
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+      }
+      
+      .section-header h2 {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header h1 {
+        font-size: 28px;
+      }
+      
+      .page-header p {
+        font-size: 16px;
+      }
+      
+      .form-header h2,
+      .recommendations-header h2 {
+        font-size: 24px;
+      }
+      
+      .investment-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Additional Styles */
+    .risk-indicator {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .risk-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .risk-dot.active {
+      background: var(--investment-primary);
+      box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+    }
+
+    .horizon-slider {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .slider-value {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="brand">💼 TaxBuddy</span>
+    </div>
+
+    <div class="nav-center">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="tax-calculator.html">Tax Calculator</a>
+      <a href="investment.html" class="active">Investment Planner</a>
+      <a href="analysis.html">Tax Analysis</a>
+    </div>
+
+    <div class="nav-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Enhanced Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1><i class="fas fa-chart-line"></i> Investment Planner</h1>
+      <p>Get personalized investment recommendations based on your income, risk tolerance, and tax situation. Maximize your savings with AI-powered insights.</p>
+    </div>
+  </div>
+
+  <div class="investment-container">
+    <!-- Enhanced Form Section -->
+    <div class="form-section">
+      <div class="form-header">
+        <div class="form-icon">
+          <i class="fas fa-user-cog"></i>
+        </div>
+        <h2>Your Investment Profile</h2>
+      </div>
+
+      <form id="investmentForm">
+        <div class="investment-form">
+          <div class="form-group">
+            <label for="annualIncome">
+              <i class="fas fa-money-bill-wave"></i>
+              Annual Income (₹)
+            </label>
+            <input 
+              type="number" 
+              id="annualIncome" 
+              placeholder="Enter your annual income, e.g., 1000000" 
+              min="0" 
+              step="1000" 
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="riskTolerance">
+              <i class="fas fa-chart-line"></i>
+              Risk Tolerance
+            </label>
+            <select id="riskTolerance">
+              <option value="low">⚪ Low (Conservative)</option>
+              <option value="medium" selected>🟡 Medium (Balanced)</option>
+              <option value="high">🔴 High (Aggressive)</option>
+            </select>
+            
+            <div class="risk-indicator">
+              <div class="risk-dot" data-risk="low"></div>
+              <div class="risk-dot active" data-risk="medium"></div>
+              <div class="risk-dot" data-risk="high"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="investmentHorizon">
+              <i class="fas fa-calendar-alt"></i>
+              Investment Horizon (years)
+            </label>
+            <input 
+              type="number" 
+              id="investmentHorizon" 
+              placeholder="Enter investment duration, e.g., 10" 
+              min="1" 
+              max="40" 
+              value="10"
+            >
+            <div class="slider-value">10 years selected</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-lightbulb"></i>
+          Get Personalized Recommendations
+        </button>
+      </form>
+
+      <div id="messages"></div>
+    </div>
+
+    <!-- Investment Options Section -->
+    <div class="investment-options-section">
+      <div class="section-header">
+        <h2>Popular Tax-Saving Investment Options</h2>
+        <p>Choose from these tax-efficient investment vehicles to maximize your savings and returns</p>
+      </div>
+
+      <div class="investment-grid">
+        <!-- ELSS Card -->
+        <div class="investment-card">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1)); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="card-title">
+              <h3>ELSS Funds</h3>
+              <p>Equity-Linked Savings Scheme</p>
+            </div>
+          </div>
+          
+          <p class="card-description">
+            Short lock-in period with high growth potential. Ideal for investors seeking equity exposure with tax benefits.
+          </p>
+          
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-percentage"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>80C Deduction</strong>
+                <span>Up to ₹1,50,000 per year</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-lock"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Lock-in Period</strong>
+                <span>Only 3 years - Shortest among tax-saving options</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-trend-up"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Historical Returns</strong>
+                <span>12-15% average annual returns</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="investment-tag">
+            <i class="fas fa-bolt"></i>
+            Best for: Growth investors with moderate risk appetite
+          </div>
+          
+          <button class="card-button" onclick="saveInvestment('ELSS')">
+            <i class="fas fa-check-circle"></i>
+            Select ELSS Investment
+          </button>
+        </div>
+
+        <!-- PPF Card -->
+        <div class="investment-card">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.1)); color: #3b82f6; border-color: rgba(59, 130, 246, 0.3);">
+              <i class="fas fa-university"></i>
+            </div>
+            <div class="card-title">
+              <h3>Public Provident Fund</h3>
+              <p>Government-backed Savings</p>
+            </div>
+          </div>
+          
+          <p class="card-description">
+            Long-term safe investment with guaranteed returns from the Government of India. Complete capital protection.
+          </p>
+          
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Guaranteed Returns</strong>
+                <span>Currently 7.1% (risk-free)</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Lock-in Period</strong>
+                <span>15 years (partial withdrawal after 7 years)</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Tax-Free Returns</strong>
+                <span>Complete tax exemption on maturity</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="investment-tag">
+            <i class="fas fa-shield-alt"></i>
+            Best for: Conservative investors seeking safety
+          </div>
+          
+          <button class="card-button" onclick="saveInvestment('PPF')">
+            <i class="fas fa-check-circle"></i>
+            Select PPF Investment
+          </button>
+        </div>
+
+        <!-- NPS Card -->
+        <div class="investment-card">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(192, 132, 252, 0.1)); color: #a855f7; border-color: rgba(168, 85, 247, 0.3);">
+              <i class="fas fa-piggy-bank"></i>
+            </div>
+            <div class="card-title">
+              <h3>National Pension Scheme</h3>
+              <p>Retirement-focused Investment</p>
+            </div>
+          </div>
+          
+          <p class="card-description">
+            Retirement-focused investment with additional tax benefits beyond 80C. Build a substantial retirement corpus.
+          </p>
+          
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-plus-circle"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Additional Deduction</strong>
+                <span>Extra ₹50,000 under 80CCD(1B)</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-user-clock"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Lock-in Period</strong>
+                <span>Until retirement (typically 60 years)</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-balance-scale"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Flexible Allocation</strong>
+                <span>Choose equity, corporate bonds, government securities</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="investment-tag">
+            <i class="fas fa-retweet"></i>
+            Best for: Maximum tax benefits + retirement planning
+          </div>
+          
+          <button class="card-button" onclick="saveInvestment('NPS')">
+            <i class="fas fa-check-circle"></i>
+            Select NPS Investment
+          </button>
+        </div>
+
+        <!-- Health Insurance Card -->
+        <div class="investment-card">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(252, 165, 165, 0.1)); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+              <i class="fas fa-heartbeat"></i>
+            </div>
+            <div class="card-title">
+              <h3>Health Insurance (80D)</h3>
+              <p>Medical Coverage + Tax Benefits</p>
+            </div>
+          </div>
+          
+          <p class="card-description">
+            Essential medical coverage with separate tax deduction benefits. Protect your family's health while saving taxes.
+          </p>
+          
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-user-shield"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Self Coverage</strong>
+                <span>Up to ₹25,000 (₹50,000 for seniors 60+)</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Family Coverage</strong>
+                <span>Additional ₹25,000 for parents</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-stethoscope"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Preventive Health</strong>
+                <span>₹5,000 for health check-ups</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="investment-tag">
+            <i class="fas fa-star"></i>
+            Best for: Everyone (essential protection)
+          </div>
+          
+          <button class="card-button" onclick="saveInvestment('Health')">
+            <i class="fas fa-check-circle"></i>
+            Select Health Insurance
+          </button>
+        </div>
+
+        <!-- Life Insurance Card -->
+        <div class="investment-card">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1)); color: #f59e0b; border-color: rgba(245, 158, 11, 0.3);">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="card-title">
+              <h3>Life Insurance</h3>
+              <p>Protection + Savings</p>
+            </div>
+          </div>
+          
+          <p class="card-description">
+            Comprehensive life coverage with savings component. Secure your family's future while enjoying tax benefits.
+          </p>
+          
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-life-ring"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Life Coverage</strong>
+                <span>Financial security for your family</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-coins"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Savings Component</strong>
+                <span>Build corpus with guaranteed returns</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-gift"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Maturity Benefits</strong>
+                <span>Tax-free returns on maturity</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="investment-tag">
+            <i class="fas fa-home"></i>
+            Best for: Family protection with savings
+          </div>
+          
+          <button class="card-button" onclick="saveInvestment('Insurance')">
+            <i class="fas fa-check-circle"></i>
+            Select Life Insurance
+          </button>
+        </div>
+
+        <!-- Education Savings Card -->
+        <div class="investment-card">
+          <div class="card-header">
+            <div class="card-icon" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(56, 189, 248, 0.1)); color: #0ea5e9; border-color: rgba(14, 165, 233, 0.3);">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="card-title">
+              <h3>Education Savings</h3>
+              <p>Child's Future Planning</p>
+            </div>
+          </div>
+          
+          <p class="card-description">
+            Dedicated savings plans for children's education. Secure their academic future while saving taxes today.
+          </p>
+          
+          <div class="benefits-list">
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-child"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Child's Future</strong>
+                <span>Dedicated education funding</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Growth Potential</strong>
+                <span>6-8% average annual returns</span>
+              </div>
+            </div>
+            
+            <div class="benefit-item">
+              <div class="benefit-icon">
+                <i class="fas fa-university"></i>
+              </div>
+              <div class="benefit-content">
+                <strong>Flexible Withdrawals</strong>
+                <span>Access funds for educational expenses</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="investment-tag">
+            <i class="fas fa-book-open"></i>
+            Best for: Parents planning children's education
+          </div>
+          
+          <button class="card-button" onclick="saveInvestment('Education')">
+            <i class="fas fa-check-circle"></i>
+            Select Education Plan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations Section -->
+    <div class="recommendations-section" id="recommendationsSection">
+      <div class="recommendations-header">
+        <div class="recommendations-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <h2>Your Personalized Recommendations</h2>
+      </div>
+
+      <div class="recommendations-grid" id="recommendationsContent">
+        <!-- Recommendations will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('tb_token');
+
+      // Check authentication
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Initialize risk indicator
+      const riskTolerance = document.getElementById('riskTolerance');
+      const riskDots = document.querySelectorAll('.risk-dot');
+      
+      function updateRiskIndicator(value) {
+        riskDots.forEach(dot => {
+          dot.classList.remove('active');
+          if (dot.dataset.risk === value) {
+            dot.classList.add('active');
+          }
+        });
+      }
+      
+      riskTolerance.addEventListener('change', (e) => {
+        updateRiskIndicator(e.target.value);
+      });
+      
+      // Initialize horizon slider value
+      const horizonInput = document.getElementById('investmentHorizon');
+      const sliderValue = document.querySelector('.slider-value');
+      
+      horizonInput.addEventListener('input', (e) => {
+        sliderValue.textContent = `${e.target.value} years selected`;
+      });
+
+      // Handle form submission
+      const investmentForm = document.getElementById('investmentForm');
+      investmentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const income = Number(document.getElementById('annualIncome').value);
+        const riskTolerance = document.getElementById('riskTolerance').value;
+        const horizon = Number(document.getElementById('investmentHorizon').value);
+
+        try {
+          // Generate recommendations based on profile
+          const recommendations = generateRecommendations(income, riskTolerance, horizon);
+          
+          // Display recommendations
+          const section = document.getElementById('recommendationsSection');
+          const content = document.getElementById('recommendationsContent');
+          
+          let html = '';
+          recommendations.forEach((rec, index) => {
+            html += `
+              <div class="recommendation-card">
+                <div class="priority-badge">${rec.priority}</div>
+                <div class="recommendation-header">
+                  <h4>${rec.option}</h4>
+                  <p>${rec.reason}</p>
+                </div>
+                <div class="recommendation-details">
+                  <div class="amount">
+                    <span class="amount-label">Suggested Investment</span>
+                    <span class="amount-value">₹${rec.suggestedAmount.toLocaleString()}</span>
+                  </div>
+                  <div style="color: var(--text-secondary); font-size: 14px;">
+                    <i class="fas fa-clock"></i> ${rec.horizon || 'Long-term'}
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          
+          content.innerHTML = html;
+          section.classList.add('active');
+          section.scrollIntoView({ behavior: 'smooth' });
+          
+        } catch (error) {
+          showMessage('Error generating recommendations', 'error');
+        }
+      });
+
+      // Generate recommendations based on income and profile
+      function generateRecommendations(income, riskTolerance, horizon) {
+        const max80C = 150000;
+        const recommendations = [];
+
+        if (riskTolerance === 'high' && horizon > 5) {
+          recommendations.push({
+            option: 'ELSS Funds',
+            priority: 'PRIORITY 1',
+            reason: 'Best for your high risk tolerance and long-term horizon. Offers growth potential with shorter lock-in period.',
+            suggestedAmount: Math.min(max80C, Math.floor(income * 0.10)),
+            horizon: '3+ years'
+          });
+        }
+
+        recommendations.push({
+          option: 'PPF',
+          priority: 'PRIORITY 2',
+          reason: 'Provide guaranteed returns and capital protection. Ideal complement to any portfolio.',
+          suggestedAmount: Math.min(max80C - recommendations.length * 50000, Math.floor(income * 0.08)),
+          horizon: '15 years'
+        });
+
+        if (income > 500000) {
+          recommendations.push({
+            option: 'NPS (National Pension Scheme)',
+            priority: 'PRIORITY 3',
+            reason: 'Maximize tax deductions with additional 80CCD(1B) benefit. Extra ₹50,000 deduction available.',
+            suggestedAmount: Math.min(50000, Math.floor(income * 0.05)),
+            horizon: 'Until retirement'
+          });
+        }
+
+        recommendations.push({
+          option: 'Health Insurance (80D)',
+          priority: 'PRIORITY 4',
+          reason: 'Essential protection. Separate deduction from 80C, reduces taxable income further.',
+          suggestedAmount: Math.min(50000, Math.floor(income * 0.03)),
+          horizon: 'Annual renewal'
+        });
+
+        return recommendations;
+      }
+
+      // Save investment selection
+      function saveInvestment(type) {
+        showMessage(`✓ ${type} has been added to your investment plan! You can view your saved plans in the dashboard.`, 'success');
+      }
+
+      function showMessage(text, type = 'error') {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
+        
+        messageDiv.innerHTML = `
+          <div class="message-icon">
+            ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>'}
+          </div>
+          <div style="flex: 1;">
+            <strong>${type === 'success' ? 'Success!' : 'Error'}</strong>
+            <p style="margin: 5px 0 0 0;">${text}</p>
+          </div>
+          <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer;">
+            <i class="fas fa-times"></i>
+          </button>
+        `;
+        
+        messagesDiv.innerHTML = '';
+        messagesDiv.appendChild(messageDiv);
+        
+        if (type === 'success') {
+          setTimeout(() => messageDiv.remove(), 5000);
+        }
+      }
+
+      // Initialize risk indicator on load
+      updateRiskIndicator(riskTolerance.value);
+    });
+  </script>
+</body>
+</html>
