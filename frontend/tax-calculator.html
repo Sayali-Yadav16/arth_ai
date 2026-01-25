@@ -1,0 +1,596 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>TaxBuddy — Tax Calculator</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      padding: 2rem 1rem;
+      margin-bottom: 2rem;
+      border-radius: 12px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .page-header p {
+      margin: 0.5rem 0 0 0;
+      opacity: 0.9;
+    }
+
+    .calculator-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .calculator-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calc-card {
+      background: var(--glass);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .calc-card h2 {
+      margin-top: 0;
+      color: #4f46e5;
+      font-size: 1.3rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      background: #1a202c;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-group .helper-text {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
+    }
+
+    .btn-calculate {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-calculate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-calculate:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .breakdown-section {
+      background: var(--glass);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .breakdown-section.active {
+      display: block;
+    }
+
+    .breakdown-section h2 {
+      color: #4f46e5;
+      margin-top: 0;
+    }
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+    }
+
+    .breakdown-table tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .breakdown-table td {
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    .breakdown-table .label {
+      color: #9ca3af;
+      font-weight: 500;
+      width: 60%;
+    }
+
+    .breakdown-table .value {
+      text-align: right;
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comparison-card {
+      background: #1a202c;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 2px solid transparent;
+    }
+
+    .comparison-card.better {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .comparison-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+
+    .comparison-card .amount {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #4f46e5;
+      margin: 0.5rem 0;
+    }
+
+    .comparison-card.better .amount {
+      color: #10b981;
+    }
+
+    .comparison-card .badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .ai-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .ai-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn-ai {
+      padding: 0.75rem;
+      border: 1px solid #4f46e5;
+      background: transparent;
+      color: #4f46e5;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-ai:hover {
+      background: #4f46e5;
+      color: white;
+    }
+
+    .btn-ai:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .ai-response {
+      background: #1a202c;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid #4f46e5;
+      margin: 1rem 0;
+      line-height: 1.6;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .ai-response h4 {
+      margin-top: 0;
+      color: #4f46e5;
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .glass-card {
+      margin: 30px 40px;
+      padding: 30px;
+      border-radius: 16px;
+      background: linear-gradient(180deg,
+          rgba(255, 255, 255, 0.05),
+          rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="brand">💼 TaxBuddy</span>
+    </div>
+
+    <div class="nav-center">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="tax-calculator.html">Tax Calculator</a>
+      <a href="investment.html">Investment Planner</a>
+      <a href="analysis.html">Tax Analysis</a>
+    </div>
+
+    <div class="nav-right">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+
+  <main class="container">
+    <div class="page-header">
+      <h1>💰 Income Tax Calculator</h1>
+      <p>Calculate your tax in both Old and New Regime with AI-powered insights</p>
+    </div>
+
+    <!-- INPUT FORM -->
+    <div class="glass-card">
+      <div class="calculator-wrapper">
+        <!-- LEFT: INPUT FORM -->
+        <div class="calc-card">
+          <h2>Your Income Details</h2>
+          <form id="taxForm">
+            <div class="form-group">
+              <label for="income">Annual Income (₹)</label>
+              <input type="number" id="income" placeholder="e.g., 1000000" min="0" step="1000" required>
+              <div class="helper-text">Your total annual gross income</div>
+            </div>
+
+            <div class="form-group">
+              <label for="age">Age (years)</label>
+              <input type="number" id="age" placeholder="e.g., 35" min="0" max="120">
+              <div class="helper-text">Leave blank if under 60</div>
+            </div>
+
+            <div class="form-group">
+              <label for="deduction80C">Section 80C Deductions (₹)</label>
+              <input type="number" id="deduction80C" placeholder="e.g., 150000" min="0" step="1000" value="0">
+              <div class="helper-text">Max ₹1,50,000 (Life Insurance, ELSS, EPF, etc.)</div>
+            </div>
+
+            <div class="form-group">
+              <label for="deduction80D">Section 80D Deductions (₹)</label>
+              <input type="number" id="deduction80D" placeholder="e.g., 50000" min="0" step="1000" value="0">
+              <div class="helper-text">Health Insurance Premium</div>
+            </div>
+
+            <button type="submit" class="btn-calculate">Calculate Tax</button>
+          </form>
+        </div>
+
+        <!-- RIGHT: COMPARISON PREVIEW -->
+        <div class="calc-card">
+          <h2>Quick Comparison</h2>
+          <div id="quickComparison" style="text-align: center; color: #9ca3af; margin-top: 2rem;">
+            <p>Fill in your income details and click "Calculate Tax"</p>
+          </div>
+          <div id="comparisonPreview" style="display: none;">
+            <div class="comparison-grid">
+              <div class="comparison-card">
+                <h3>Old Regime Tax</h3>
+                <div class="amount" id="previewOldTax">₹0</div>
+              </div>
+              <div class="comparison-card">
+                <h3>New Regime Tax</h3>
+                <div class="amount" id="previewNewTax">₹0</div>
+              </div>
+              <div class="comparison-card">
+                <h3>Your Savings</h3>
+                <div class="amount" id="previewSavings">₹0</div>
+              </div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+              <strong id="betterRecommendation" style="color: #10b981; font-size: 1.1rem;"></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILED BREAKDOWN -->
+    <div class="breakdown-section" id="breakdownSection">
+      <h2>📊 Detailed Tax Breakdown</h2>
+
+      <table class="breakdown-table">
+        <tr>
+          <td class="label">Annual Income</td>
+          <td class="value" id="bd-income">₹0</td>
+        </tr>
+        <tr>
+          <td class="label">Section 80C Deductions</td>
+          <td class="value" id="bd-ded80C">₹0</td>
+        </tr>
+        <tr>
+          <td class="label">Section 80D Deductions</td>
+          <td class="value" id="bd-ded80D">₹0</td>
+        </tr>
+        <tr>
+          <td class="label"><strong>Total Deductions</strong></td>
+          <td class="value" id="bd-totalDed"><strong>₹0</strong></td>
+        </tr>
+        <tr style="background: rgba(79, 70, 229, 0.1);">
+          <td class="label"><strong>Taxable Income</strong></td>
+          <td class="value" id="bd-taxable"><strong>₹0</strong></td>
+        </tr>
+      </table>
+
+      <h3 style="color: #4f46e5; margin-top: 1.5rem;">Tax Comparison</h3>
+      <div class="comparison-grid">
+        <div class="comparison-card" id="oldRegimeCard">
+          <h3>Old Regime</h3>
+          <div class="amount" id="bd-oldTax">₹0</div>
+          <p style="margin: 0.5rem 0; color: #9ca3af; font-size: 0.85rem;">With Deductions</p>
+        </div>
+        <div class="comparison-card" id="newRegimeCard">
+          <h3>New Regime</h3>
+          <div class="amount" id="bd-newTax">₹0</div>
+          <p style="margin: 0.5rem 0; color: #9ca3af; font-size: 0.85rem;">No Deductions</p>
+        </div>
+        <div class="comparison-card">
+          <h3>Tax Savings</h3>
+          <div class="amount" id="bd-savings">₹0</div>
+          <p style="margin: 0.5rem 0; color: #9ca3af; font-size: 0.85rem;">By Choosing Better Regime</p>
+        </div>
+      </div>
+
+      <div
+        style="margin-top: 1.5rem; padding: 1rem; background: rgba(79, 70, 229, 0.1); border-radius: 8px; border-left: 4px solid #4f46e5;">
+        <strong style="color: #4f46e5;">Recommended Regime:</strong>
+        <p style="margin: 0.5rem 0; color: #e5e7eb;" id="bd-recommendation"></p>
+      </div>
+
+      <!-- AI FEATURES -->
+      <div class="ai-buttons">
+        <button class="btn-ai" id="explainBtn">
+          <span>🤖 Explain My Tax</span>
+        </button>
+        <button class="btn-ai" id="suggestBtn">
+          <span>💡 Tax Saving Tips</span>
+        </button>
+        <button class="btn-ai" id="downloadBtn">
+          <span>📥 Download Summary</span>
+        </button>
+      </div>
+
+      <!-- AI RESPONSE AREA -->
+      <div id="aiExplanation" class="ai-response" style="display: none;">
+        <h4>🤖 AI Explanation</h4>
+        <div id="explanationContent"></div>
+      </div>
+
+      <div id="aiSuggestions" class="ai-response" style="display: none;">
+        <h4>💡 Tax Saving Suggestions</h4>
+        <div id="suggestionsContent"></div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div id="messages"></div>
+    </div>
+  </main>
+
+  <script src="js/tax.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check authentication
+      const token = localStorage.getItem('tb_token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Navigation
+      const navDashboard = document.getElementById('nav-dashboard');
+      const navInvest = document.getElementById('nav-invest');
+      const navAnalysis = document.getElementById('nav-analysis');
+      const logoutBtn = document.getElementById('logout');
+
+      if (navDashboard) navDashboard.addEventListener('click', () => {
+        window.location.href = 'dashboard.html';
+      });
+      if (navInvest) navInvest.addEventListener('click', () => {
+        window.location.href = 'investment.html';
+      });
+      if (navAnalysis) navAnalysis.addEventListener('click', () => {
+        window.location.href = 'analysis.html';
+      });
+      if (logoutBtn) logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('tb_token');
+        localStorage.removeItem('tb_user');
+        window.location.href = 'login.html';
+      });
+    }); // Close DOMContentLoaded
+  </script>
+
+  <script type="module" defer>
+  import Chatbot from "https://cdn.n8nchatui.com/v1/embed.js";
+  Chatbot.init({
+    "n8nChatUrl": "https://piyushabot.app.n8n.cloud/webhook/27e58f26-e94f-45c5-83e5-80953e5f9c39/chat",
+    "metadata": {}, // Include any custom data to send with each message to your n8n workflow
+    "theme": {
+      "button": {
+        "backgroundColor": "#1f2245",
+        "right": 20,
+        "bottom": 20,
+        "size": 50,
+        "iconColor": "#fff5f5",
+        "customIconSrc": "https://www.svgrepo.com/show/375527/ai-platform.svg",
+        "customIconSize": 74,
+        "customIconBorderRadius": 24,
+        "autoWindowOpen": {
+          "autoOpen": true,
+          "openDelay": 2
+        },
+        "borderRadius": "rounded"
+      },
+      "tooltip": {
+        "showTooltip": true,
+        "tooltipMessage": "Hello, I'm Tax Assistant!",
+        "tooltipBackgroundColor": "#1f2245",
+        "tooltipTextColor": "#ffffff",
+        "tooltipFontSize": 15,
+        "hideTooltipOnMobile": false
+      },
+      "allowProgrammaticMessage": false,
+      "chatWindow": {
+        "borderRadiusStyle": "rounded",
+        "avatarBorderRadius": 23,
+        "messageBorderRadius": 11,
+        "showTitle": true,
+        "title": "Tax Assistant",
+        "titleAvatarSrc": "https://www.svgrepo.com/show/375527/ai-platform.svg",
+        "avatarSize": 27,
+        "welcomeMessage": "Hello! I'm Tax Assistant, i'm here to assist you for your tax related questions",
+        "errorMessage": "Please connect me to n8n first",
+        "backgroundColor": "#000000",
+        "height": 600,
+        "width": 380,
+        "fontSize": 16,
+        "starterPrompts": [
+          "",
+          ""
+        ],
+        "starterPromptFontSize": 15,
+        "renderHTML": false,
+        "clearChatOnReload": false,
+        "showScrollbar": true,
+        "botMessage": {
+          "backgroundColor": "#1F2254",
+          "textColor": "#fafafa",
+          "showAvatar": true,
+          "avatarSrc": "https://www.svgrepo.com/show/375527/ai-platform.svg",
+          "showCopyToClipboardIcon": false
+        },
+        "userMessage": {
+          "backgroundColor": "#1f2254",
+          "textColor": "#ffffff",
+          "showAvatar": true,
+          "avatarSrc": "https://www.svgrepo.com/show/532363/user-alt-1.svg"
+        },
+        "textInput": {
+          "placeholder": "Type your query",
+          "backgroundColor": "#ffffff",
+          "textColor": "#1e1e1f",
+          "sendButtonColor": "#1f2254",
+          "maxChars": 50,
+          "maxCharsWarningMessage": "You exceeded the characters limit. Please input less than 50 characters.",
+          "autoFocus": false,
+          "borderRadius": 14,
+          "sendButtonBorderRadius": 18
+        }
+      }
+    }
+    });
+  </script>
+
+
+
+</body>
+
+</html>

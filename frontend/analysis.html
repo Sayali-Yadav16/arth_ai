@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>TaxBuddy — Tax Analysis</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --analysis-primary: #4f46e5;
+      --analysis-secondary: #6366f1;
+      --analysis-accent: #7c6cff;
+      --analysis-success: #10b981;
+      --analysis-warning: #f59e0b;
+      --analysis-info: #3b82f6;
+    }
+
+    /* Enhanced Page Header */
+    .page-header {
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-secondary), var(--analysis-accent));
+      color: white;
+      padding: 3rem 2rem;
+      margin: 20px 40px 40px;
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(79, 70, 229, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.05"><path d="M0,0 L100,0 L100,100 Z" fill="white"/></svg>');
+      background-size: cover;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #e0e7ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .page-header p {
+      margin: 0;
+      font-size: 18px;
+      opacity: 0.95;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    /* Main Container */
+    .analysis-container {
+      margin: 0 40px 60px;
+    }
+
+    /* Enhanced Upload Section */
+    .upload-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 50px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--analysis-primary), var(--analysis-accent));
+      opacity: 0.8;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .section-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .section-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: var(--analysis-primary);
+      border: 2px solid rgba(79, 70, 229, 0.3);
+    }
+
+    /* Enhanced Upload Zone */
+    .upload-zone {
+      padding: 3rem;
+      text-align: center;
+      border: 2px dashed var(--analysis-primary);
+      border-radius: 20px;
+      cursor: pointer;
+      background: rgba(79, 70, 229, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-zone:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: var(--analysis-accent);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+    }
+
+    .upload-zone i {
+      font-size: 48px;
+      color: var(--analysis-primary);
+      margin-bottom: 15px;
+    }
+
+    .upload-zone p {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 8px 0;
+    }
+
+    .upload-zone small {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* File Items */
+    .file-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1.25rem;
+      border-radius: 16px;
+      margin: 1rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .file-item:hover {
+      background: rgba(79, 70, 229, 0.05);
+      border-color: rgba(79, 70, 229, 0.3);
+      transform: translateX(5px);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .file-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--analysis-primary);
+    }
+
+    .file-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .file-size {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Enhanced Buttons */
+    #analyzeBtn {
+      padding: 18px 40px;
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-secondary));
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 30px;
+      width: 100%;
+    }
+
+    #analyzeBtn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.7s ease;
+    }
+
+    #analyzeBtn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+    }
+
+    #analyzeBtn:hover::before {
+      left: 100%;
+    }
+
+    /* Enhanced Analysis Result */
+    .analysis-result {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 50px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+      animation: slideUp 0.5s ease;
+    }
+
+    .analysis-result::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--analysis-success), #34d399);
+      opacity: 0.8;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Insights Grid */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .insight-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 25px;
+      border-radius: 20px;
+      border-left: 4px solid var(--analysis-primary);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .insight-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(79, 70, 229, 0.15);
+      border-left-color: var(--analysis-accent);
+    }
+
+    .insight-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--analysis-primary);
+      margin-bottom: 15px;
+    }
+
+    .insight-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .insight-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    /* Enhanced Chat Section */
+    .chat-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 50px;
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+    .chat-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--analysis-info), #60a5fa);
+      opacity: 0.8;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+
+    .document-badge {
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-accent));
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #chatHistory {
+      height: 350px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Enhanced Chat Bubbles */
+    .chat-msg {
+      display: flex;
+      margin-bottom: 20px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .chat-msg.user {
+      justify-content: flex-end;
+    }
+
+    .chat-msg.ai {
+      justify-content: flex-start;
+    }
+
+    .bubble {
+      max-width: 70%;
+      padding: 15px 20px;
+      border-radius: 20px;
+      line-height: 1.6;
+      font-size: 15px;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-msg.ai .bubble {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      color: var(--text-primary);
+      border-bottom-left-radius: 5px;
+    }
+
+    .chat-msg.user .bubble {
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-accent));
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: 15px;
+    }
+
+    #chatInput {
+      flex: 1;
+      padding: 18px 25px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    #chatInput:hover {
+      border-color: rgba(124, 108, 255, 0.3);
+      background: rgba(124, 108, 255, 0.05);
+    }
+
+    #chatInput:focus {
+      outline: none;
+      border-color: var(--analysis-primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    #sendChatBtn {
+      padding: 0 30px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--analysis-primary), var(--analysis-secondary));
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #sendChatBtn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+    }
+
+    #sendChatBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Enhanced History Section */
+    .history-section {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+      border-radius: 24px;
+      padding: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .history-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--analysis-warning), #fbbf24);
+      opacity: 0.8;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .history-card {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 25px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .history-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .history-date {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+
+    .history-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 15px;
+      padding-right: 80px;
+    }
+
+    .history-preview {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Messages */
+    #messages {
+      margin-top: 20px;
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 2px solid var(--analysis-success);
+      color: #a7f3d0;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid #ef4444;
+      color: #fca5a5;
+      padding: 20px;
+      border-radius: 16px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .message-icon {
+      font-size: 24px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .insights-grid,
+      .history-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        margin: 15px;
+        padding: 30px 20px;
+      }
+      
+      .page-header h1 {
+        font-size: 32px;
+      }
+      
+      .analysis-container {
+        margin: 0 20px 40px;
+      }
+      
+      .upload-section,
+      .analysis-result,
+      .chat-section,
+      .history-section {
+        padding: 30px 20px;
+      }
+      
+      .insights-grid,
+      .history-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .bubble {
+        max-width: 85%;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+      }
+      
+      .section-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header h1 {
+        font-size: 28px;
+      }
+      
+      .page-header p {
+        font-size: 16px;
+      }
+      
+      .section-header h2 {
+        font-size: 24px;
+      }
+      
+      .upload-zone {
+        padding: 2rem;
+      }
+      
+      .bubble {
+        max-width: 90%;
+        padding: 12px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="nav-left">💼 <strong>TaxBuddy</strong></div>
+    <div class="nav-center">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="tax-calculator.html">Tax Calculator</a>
+      <a href="investment.html">Investment Planner</a>
+      <a class="active" href="analysis.html">Tax Analysis</a>
+    </div>
+    <div class="nav-right">
+      <button onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="header-content">
+      <h1><i class="fas fa-file-alt"></i> Tax Document Analysis</h1>
+      <p>Upload tax documents and get AI-powered insights using RAG technology. Our AI analyzes your documents to provide personalized tax optimization recommendations.</p>
+    </div>
+  </div>
+
+  <div class="analysis-container">
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h2>Upload Tax Documents</h2>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p>📤 Click or Drag & Drop Files</p>
+        <small>Supported formats: PDF, JPG, PNG, DOCX, CSV</small>
+      </div>
+
+      <input type="file" id="fileInput" multiple hidden />
+
+      <div id="fileList"></div>
+      <div id="messages"></div>
+
+      <button id="analyzeBtn" style="display:none;">
+        <i class="fas fa-robot"></i>
+        🤖 Analyze Documents with AI
+      </button>
+    </div>
+
+    <!-- Analysis Result -->
+    <div class="analysis-result" id="analysisResult">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h2>📊 AI Analysis Report</h2>
+      </div>
+      <div id="resultContent">
+        <div class="insights-grid">
+          <!-- Insights will be dynamically inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Section -->
+    <div class="chat-section" id="chatSection">
+      <div class="chat-header">
+        <div class="section-header">
+          <div class="section-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <h2>💬 Ask Your Document</h2>
+        </div>
+        <div class="document-badge">
+          <i class="fas fa-file-alt"></i>
+          📄 Document Grounded
+        </div>
+      </div>
+
+      <div id="chatHistory">
+        <div class="chat-msg ai">
+          <div class="bubble">Hello! I've analyzed your tax documents. Ask me anything about your tax situation, deductions, or optimization strategies.</div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input type="text" id="chatInput" placeholder="Example: What is my total taxable income? How can I save more on taxes?"
+          disabled />
+        <button id="sendChatBtn" disabled>
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <i class="fas fa-history"></i>
+        </div>
+        <h2>📋 Analysis History</h2>
+      </div>
+      <div id="historyContent">
+        <div class="history-grid">
+          <!-- History cards will be dynamically inserted here -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/analysis.js"></script>
+  <script>
+    // Add some sample history cards
+    document.addEventListener('DOMContentLoaded', function() {
+      const historyGrid = document.querySelector('.history-grid');
+      
+      // Sample history data
+      const historyData = [
+        {
+          date: '2026-01-24',
+          title: 'FY 2023-24 Tax Analysis',
+          preview: 'Complete analysis of income tax returns with optimization suggestions',
+          fileCount: 5
+        },
+        {
+          date: '2026-01-24',
+          title: 'Investment Portfolio Review',
+          preview: 'Tax-efficient investment recommendations based on current portfolio',
+          fileCount: 3
+        },
+        {
+          date: '2026-01-25',
+          title: 'Business Expense Analysis',
+          preview: 'Deduction optimization for business expenses and depreciation',
+          fileCount: 7
+        }
+      ];
+
+      // Render history cards
+      historyData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+          <div class="history-date">${item.date}</div>
+          <div class="history-title">${item.title}</div>
+          <div class="history-preview">${item.preview}</div>
+          
+          <div style="margin-top: 15px; font-size: 12px; color: var(--text-secondary);">
+            <i class="fas fa-file"></i> ${item.fileCount} documents analyzed
+          </div>
+        `;
+        historyGrid.appendChild(card);
+      });
+    });
+  </script>
+  <script type="module" defer>
+  import Chatbot from "https://cdn.n8nchatui.com/v1/embed.js";
+  Chatbot.init({
+    "n8nChatUrl": "https://piyushabot.app.n8n.cloud/webhook/27e58f26-e94f-45c5-83e5-80953e5f9c39/chat",
+    "metadata": {}, // Include any custom data to send with each message to your n8n workflow
+    "theme": {
+      "button": {
+        "backgroundColor": "#1f2245",
+        "right": 20,
+        "bottom": 20,
+        "size": 50,
+        "iconColor": "#fff5f5",
+        "customIconSrc": "https://www.svgrepo.com/show/375527/ai-platform.svg",
+        "customIconSize": 74,
+        "customIconBorderRadius": 24,
+        "autoWindowOpen": {
+          "autoOpen": true,
+          "openDelay": 2
+        },
+        "borderRadius": "rounded"
+      },
+      "tooltip": {
+        "showTooltip": true,
+        "tooltipMessage": "Hello, I'm Tax Assistant!",
+        "tooltipBackgroundColor": "#1f2245",
+        "tooltipTextColor": "#ffffff",
+        "tooltipFontSize": 15,
+        "hideTooltipOnMobile": false
+      },
+      "allowProgrammaticMessage": false,
+      "chatWindow": {
+        "borderRadiusStyle": "rounded",
+        "avatarBorderRadius": 23,
+        "messageBorderRadius": 11,
+        "showTitle": true,
+        "title": "Tax Assistant",
+        "titleAvatarSrc": "https://www.svgrepo.com/show/375527/ai-platform.svg",
+        "avatarSize": 27,
+        "welcomeMessage": "Hello! I'm Tax Assistant, i'm here to assist you for your tax related questions",
+        "errorMessage": "Please connect me to n8n first",
+        "backgroundColor": "#000000",
+        "height": 450,
+        "width": 380,
+        "fontSize": 16,
+        "starterPrompts": [
+          "",
+          ""
+        ],
+        "starterPromptFontSize": 15,
+        "renderHTML": false,
+        "clearChatOnReload": false,
+        "showScrollbar": true,
+        "botMessage": {
+          "backgroundColor": "#1F2254",
+          "textColor": "#fafafa",
+          "showAvatar": true,
+          "avatarSrc": "https://www.svgrepo.com/show/375527/ai-platform.svg",
+          "showCopyToClipboardIcon": false
+        },
+        "userMessage": {
+          "backgroundColor": "#1f2254",
+          "textColor": "#ffffff",
+          "showAvatar": true,
+          "avatarSrc": "https://www.svgrepo.com/show/532363/user-alt-1.svg"
+        },
+        "textInput": {
+          "placeholder": "Type your query",
+          "backgroundColor": "#ffffff",
+          "textColor": "#1e1e1f",
+          "sendButtonColor": "#1f2254",
+          "maxChars": 50,
+          "maxCharsWarningMessage": "You exceeded the characters limit. Please input less than 50 characters.",
+          "autoFocus": false,
+          "borderRadius": 14,
+          "sendButtonBorderRadius": 18
+        }
+      }
+    }
+    });
+  </script>
+</body>
+
+</html>

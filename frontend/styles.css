@@ -1,0 +1,193 @@
+/* ===== AUTH PAGES (LOGIN / SIGNUP) ===== */
+
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e1b4b, #312e81);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.auth-card {
+  width: 900px;
+  height: 520px;
+  display: flex;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #0f172a;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+}
+
+/* LEFT PANEL */
+.auth-left {
+  flex: 1;
+  background: radial-gradient(circle at top, #4f46e5, #020617);
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.auth-illustration {
+  text-align: center;
+}
+
+.auth-illustration img {
+  width: 80%;
+  max-width: 280px;
+}
+
+.auth-tagline {
+  text-align: center;
+  color: #c7d2fe;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* RIGHT PANEL */
+.auth-right {
+  flex: 1;
+  padding: 50px;
+  background: #020617;
+  color: #fff;
+}
+
+.auth-right h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.auth-right p {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  margin-top: 20px;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: none;
+  background: #020617;
+  border: 1px solid #1e293b;
+  color: #fff;
+}
+
+.auth-form input::placeholder {
+  color: #6b7280;
+}
+
+.auth-form label {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #7c3aed, #6366f1);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-form button:hover {
+  opacity: 0.9;
+}
+
+.auth-alt {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.auth-alt a {
+  color: #818cf8;
+  text-decoration: none;
+}
+
+#chatbot-container {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 320px;
+  height: 420px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: Arial;
+}
+
+#chatbot-header {
+  background: #0a3cff;
+  color: white;
+  padding: 12px;
+  font-weight: bold;
+}
+
+#chatbot-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.user {
+  text-align: right;
+  margin: 8px;
+  color: #0a3cff;
+}
+
+.bot {
+  text-align: left;
+  margin: 8px;
+  color: #333;
+}
+
+#chatbot-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+#chatbot-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+}
+
+#chatbot-input button {
+  padding: 10px;
+  background: #0a3cff;
+  color: white;
+  border: none;
+}
+
+#chatbot-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #0a3cff;
+  color: white;
+  border-radius: 50%;
+  padding: 15px;
+  border: none;
+  font-size: 18px;
+}
