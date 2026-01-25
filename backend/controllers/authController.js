@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const { createUser, findUserByEmail, findUserById } = require('../models/userModels');
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { createUser, findUserByEmail, findUserById } from '../models/userModels.js';
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ const SALT_ROUNDS = 10;
  * POST /api/auth/signup
  * body: { name, email, password }
  */
-async function signup(req, res, next) {
+export async function signup(req, res, next) {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) return res.status(400).json({ error: 'Name, email and password are required' });
@@ -33,7 +33,7 @@ async function signup(req, res, next) {
  * POST /api/auth/login
  * body: { email, password }
  */
-async function login(req, res, next) {
+export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
@@ -51,8 +51,3 @@ async function login(req, res, next) {
     next(err);
   }
 }
-
-module.exports = {
-  signup,
-  login
-};

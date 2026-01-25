@@ -1,9 +1,6 @@
-const axios = require('axios');
-const dotenv = require('dotenv');
+import axios from 'axios';
+import dotenv from 'dotenv';
 dotenv.config();
-
-
-
 
 // ===== DETERMINISTIC TAX CALCULATION (RULE-BASED, NO AI) =====
 
@@ -85,7 +82,7 @@ function calculateNewRegimeTax(income, age) {
  * POST /api/tax/calculate
  * Calculate tax for both regimes
  */
-exports.calculateTax = (req, res) => {
+export function calculateTax(req, res) {
   try {
     const { income, age, deduction80C, deduction80D } = req.body;
 
@@ -128,13 +125,13 @@ exports.calculateTax = (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Calculation error: ' + err.message });
   }
-};
+}
 
 /**
  * POST /api/tax/explain
  * Get AI explanation of tax calculation using Gemini API
  */
-exports.explainTax = async (req, res) => {
+export async function explainTax(req, res) {
   try {
     const { income, totalDeductions, taxableIncome, oldRegimeTax, newRegimeTax, betterRegime } = req.body;
 
@@ -160,7 +157,6 @@ Keep it conversational and encouraging.`;
     try {
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
-
         {
           contents: [{
             parts: [{ text: prompt }]
@@ -184,13 +180,13 @@ Keep it conversational and encouraging.`;
   } catch (err) {
     res.status(500).json({ error: 'Failed to generate explanation: ' + err.message });
   }
-};
+}
 
 /**
  * POST /api/tax/suggestions
  * Get AI suggestions for tax savings using Gemini API
  */
-exports.getTaxSuggestions = async (req, res) => {
+export async function getTaxSuggestions(req, res) {
   try {
     const { income, age, currentDeductions80C, currentDeductions80D } = req.body;
 
@@ -218,7 +214,7 @@ Be specific and actionable. Don't calculate tax, just suggest options.`;
 
     try {
       const response = await axios.post(
-         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
           contents: [{
             parts: [{ text: prompt }]
@@ -246,13 +242,13 @@ Be specific and actionable. Don't calculate tax, just suggest options.`;
   } catch (err) {
     res.status(500).json({ error: 'Failed to generate suggestions: ' + err.message });
   }
-};
+}
 
 /**
  * POST /api/tax/summary
  * Generate downloadable tax summary using Gemini API
  */
-exports.generateTaxSummary = async (req, res) => {
+export async function generateTaxSummary(req, res) {
   try {
     const { income, totalDeductions, taxableIncome, oldRegimeTax, newRegimeTax, betterRegime, selectedRegime } = req.body;
 
@@ -278,7 +274,7 @@ Include key takeaways and filing recommendations.`;
 
     try {
       const response = await axios.post(
-         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
           contents: [{
             parts: [{ text: prompt }]
@@ -392,4 +388,4 @@ Include key takeaways and filing recommendations.`;
   } catch (err) {
     res.status(500).json({ error: 'Failed to generate summary: ' + err.message });
   }
-};
+}

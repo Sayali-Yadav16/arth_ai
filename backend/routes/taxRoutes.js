@@ -1,12 +1,13 @@
-const express = require("express");
+import express from 'express';
+import { calculateTax, explainTax, getTaxSuggestions, generateTaxSummary } from '../controllers/taxController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const taxController = require("../controllers/taxController");
-const authMiddleware = require("../middleware/authMiddleware");
 
 // All routes require authentication
-router.post("/calculate", authMiddleware, taxController.calculateTax);
-router.post("/explain", authMiddleware, taxController.explainTax);
-router.post("/suggestions", authMiddleware, taxController.getTaxSuggestions);
-router.post("/summary", authMiddleware, taxController.generateTaxSummary);
+router.post("/calculate", authMiddleware, calculateTax);
+router.post("/explain", authMiddleware, explainTax);
+router.post("/suggestions", authMiddleware, getTaxSuggestions);
+router.post("/summary", authMiddleware, generateTaxSummary);
 
-module.exports = router;
+export default router;

@@ -1,12 +1,12 @@
-const axios = require('axios');
-const dotenv = require('dotenv');
+import axios from 'axios';
+import dotenv from 'dotenv';
 dotenv.config();
 
 /**
  * POST /api/chatbot/ask
  * Chat endpoint for tax-related questions using Gemini API
  */
-exports.askQuestion = async (req, res) => {
+export async function askQuestion(req, res) {
   try {
     const { question } = req.body;
 
@@ -57,7 +57,7 @@ Respond in a helpful, friendly manner.`;
       res.json({ answer });
     } catch (apiErr) {
       console.error('Gemini API Error:', apiErr.response?.data || apiErr.message);
-      
+
       // Fallback responses for different question types
       let fallbackAnswer = '';
       const q = question.toLowerCase();
@@ -138,4 +138,4 @@ Please ask any tax-related question! 📊`;
   } catch (err) {
     res.status(500).json({ error: 'Failed to process question: ' + err.message });
   }
-};
+}

@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { askQuestion } from '../controllers/chatbotController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
+
 const router = express.Router();
-const chatbotController = require('../controllers/chatbotController');
-const authMiddleware = require('../middleware/authMiddleware');
 
 // Chatbot endpoint - requires authentication
-router.post('/ask', authMiddleware, chatbotController.askQuestion);
+router.post('/ask', authMiddleware, askQuestion);
 
-module.exports = router;
+export default router;
