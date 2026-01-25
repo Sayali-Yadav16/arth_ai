@@ -1,4 +1,6 @@
-const API_BASE = "http://localhost:4000/api";
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:4000/api'
+  : '/api';
 const token = localStorage.getItem("tb_token");
 
 if (!token) window.location.href = "login.html";

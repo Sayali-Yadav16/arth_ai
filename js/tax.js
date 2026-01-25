@@ -1,5 +1,8 @@
 // Get API base URL
-const API_URL = 'http://localhost:4000/api';
+// Get API base URL
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:4000/api'
+  : '/api';
 const token = localStorage.getItem('tb_token');
 
 
@@ -57,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Show breakdown section
       breakdownSection.classList.add('active');
-      
+
       // Scroll to results
       breakdownSection.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
@@ -105,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Recommendation
     const effectiveTax = Math.min(data.oldRegimeTax, data.newRegimeTax);
     const effectiveRate = ((effectiveTax / data.income) * 100).toFixed(2);
-    
+
     document.getElementById('bd-recommendation').innerHTML = `
       ${data.betterRegime} will save you <strong>₹${data.taxSavings.toLocaleString()}</strong><br>
       Your effective tax rate: <strong>${effectiveRate}%</strong>
@@ -159,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) throw new Error('Failed to generate explanation');
 
         const data = await response.json();
-        
+
         document.getElementById('explanationContent').innerHTML = data.explanation.replace(/\n/g, '<br>');
         document.getElementById('aiExplanation').style.display = 'block';
       } catch (error) {
@@ -199,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response.ok) throw new Error('Failed to generate suggestions');
 
         const data = await response.json();
-        
+
         document.getElementById('suggestionsContent').innerHTML = data.suggestions.replace(/\n/g, '<br>');
         document.getElementById('aiSuggestions').style.display = 'block';
       } catch (error) {
