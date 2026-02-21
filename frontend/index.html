@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaxBuddy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="assets/logo.png" alt="TaxBuddy Logo" class="nav-logo">
+    <span class="brand-name">TaxBuddy</span>
+  </div>
+
+  <div class="nav-center">
+    <a class="active" href="#">Overview</a>
+    <a href="#">Calculator</a>
+    <a href="#">Planner</a>
+  </div>
+
+ <div class="nav-right">
+  <a href="login.html">
+    <button class="login-btn">Login →</button>
+  </a>
+</div>
+</nav>
+
+  <!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-container">
+
+    <!-- LEFT CONTENT -->
+    <div class="hero-left">
+      <span class="badge">⚡ AI-DRIVEN TAX OPTIMIZATION</span>
+
+      <h1>
+        Effortless Tax<br />
+        <span class="gradient-text">Intelligence.</span>
+      </h1>
+
+      <p>
+        Stop guessing your tax liability. Our AI analyzes your income
+        profile to provide real-time insights and optimal filing
+        strategies for the current financial year.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="tax-calculator.html" class="btn primary">
+          Calculate My Tax →
+        </a>
+        <a href="login.html" class="btn secondary">
+          Talk to AI Expert
+        </a>
+      </div>
+
+      <div class="hero-features">
+        <div class="feature">
+          🔒 Secure
+          <span>Bank-grade encryption</span>
+        </div>
+        <div class="feature">
+          📈 Optimized
+          <span>Maximized deductions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT IMAGE -->
+    <div class="hero-right">
+      <div class="analytics-card">
+        <img src="assets/img3.png" alt="Tax Analytics Preview" />
+      </div>
+    </div>
+
+  </div>
+</section>
+
+  <section class="features-section">
+    <div class="features-grid">
+
+      <!-- Tax Calculator -->
+      <div class="feature-card">
+        <div class="icon-box purple">
+          <svg viewBox="0 0 24 24" class="icon-svg">
+            <rect x="4" y="2" width="16" height="20" rx="3"></rect>
+            <line x1="8" y1="7" x2="16" y2="7"></line>
+            <circle cx="9" cy="11" r="1"></circle>
+            <circle cx="12" cy="11" r="1"></circle>
+            <circle cx="15" cy="11" r="1"></circle>
+            <circle cx="9" cy="15" r="1"></circle>
+            <circle cx="12" cy="15" r="1"></circle>
+            <circle cx="15" cy="15" r="1"></circle>
+          </svg>
+        </div>
+        <h3>Tax Calculator</h3>
+        <p>
+          Quick tax calculations with itemized breakdowns, history tracking,
+          and regional law compliance.
+        </p>
+        <span class="arrow">↗</span>
+      </div>
+
+      <!-- Investment Planner -->
+      <div class="feature-card">
+        <div class="icon-box violet">
+          <svg viewBox="0 0 24 24" class="icon-svg">
+            <rect x="3" y="6" width="18" height="12" rx="3"></rect>
+            <line x1="16" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+        <h3>Investment Planner</h3>
+        <p>
+          Optimized ELSS, PPF, and NPS allocation suggestions tailored to
+          your income bracket.
+        </p>
+        <span class="arrow">↗</span>
+      </div>
+
+      <!-- AI Assistant -->
+      <div class="feature-card">
+        <div class="icon-box green">
+          <svg viewBox="0 0 24 24" class="icon-svg">
+            <path d="M9 3c-2.5 0-4.5 2-4.5 4.5S6.5 12 9 12"></path>
+            <path d="M15 3c2.5 0 4.5 2 4.5 4.5S17.5 12 15 12"></path>
+            <path d="M9 12v6"></path>
+            <path d="M15 12v6"></path>
+            <line x1="9" y1="18" x2="15" y2="18"></line>
+          </svg>
+        </div>
+        <h3>AI Assistant</h3>
+        <p>
+          Context-aware tax expert trained on latest circulars.
+          Ask anything, get instant reliable answers.
+        </p>
+        <span class="arrow">↗</span>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= IMPORTANT RESOURCES ================= -->
+
+    <section class="resources-section">
+  <h2 class="section-title">Important Resources</h2>
+  <p class="section-subtitle">
+    Quick access to authoritative government portals and tax information directories.
+  </p>
+
+  <div class="card-grid">
+
+    <!-- Income Tax Portal -->
+    <a href="https://www.incometax.gov.in" target="_blank" class="feature-card">
+      <div class="icon-box purple">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>
+        </svg>
+      </div>
+      <h3>Income Tax Portal</h3>
+      <p>Official e-filing portal of the Income Tax Department, Government of India.</p>
+      <span class="card-link">Visit Portal →</span>
+    </a>
+
+    <!-- Tax Info Directory -->
+    <a href="https://www.tin-nsdl.com" target="_blank" class="feature-card">
+      <div class="icon-box violet">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 4h16v16H4z"/>
+        </svg>
+      </div>
+      <h3>Tax Info Directory</h3>
+      <p>Access PAN, TAN, and TDS/TCS services via TIN-NSDL.</p>
+      <span class="card-link">Visit Portal →</span>
+    </a>
+
+    <!-- GST Portal -->
+    <a href="https://www.gst.gov.in" target="_blank" class="feature-card">
+      <div class="icon-box green">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2l8 4v6c0 5-3.5 9.5-8 10-4.5-.5-8-5-8-10V6z"/>
+        </svg>
+      </div>
+      <h3>GST Portal</h3>
+      <p>Centralized platform for GST registration, returns, and compliance.</p>
+      <span class="card-link">Visit Portal →</span>
+    </a>
+
+  </div>
+</section>
+
+</body>
+</html>

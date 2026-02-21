@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TaxBuddy Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="bot.css" />
+  <script defer src="js/chatbot.js"></script>
+
+  <script>
+    // Redirect to tax calculator if user is authenticated
+    const token = localStorage.getItem('tb_token');
+    if (!token) {
+      window.location.href = 'login.html';
+    } else {
+      window.location.href = 'tax-calculator.html';
+    }
+  </script>
+  <style>
+    .dashboard-hero {
+  margin: 30px 40px;
+  padding: 40px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+}
+
+.dashboard-hero h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.dashboard-hero p {
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+  </style>
+</head>
+<body class="dark-bg">
+
+<nav class="navbar">
+  <div class="nav-left">
+    <span class="brand">💼 TaxBuddy</span>
+  </div>
+
+  <div class="nav-center">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="tax-calculator.html">Tax Calculator</a>
+    <a href="investment.html">Investment Planner</a>
+    <a href="analysis.html">Tax Analysis</a>
+  </div>
+
+  <div class="nav-right">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</nav>
+<section class="dashboard-hero">
+  <h1>Welcome to TaxBuddy!!</h1>
+  <p>Your smart assistant for tax calculation, analysis & savings</p>
+</section>
+
+
+
+  <!-- DASHBOARD -->
+  <section class="dashboard">
+    <h1>Hello 👋</h1>
+    <p class="sub-text">Your tax overview at a glance</p>
+
+    <!-- SUMMARY CARDS -->
+    <div class="card-grid">
+      <div class="card">
+        <h3>Annual Income</h3>
+        <p id="income">₹0</p>
+      </div>
+      <div class="card">
+        <h3>Taxable Income</h3>
+        <p id="taxable">₹0</p>
+      </div>
+      <div class="card">
+        <h3>Better Regime</h3>
+        <p id="better">-</p>
+      </div>
+      <div class="card highlight">
+        <h3>Tax Savings</h3>
+        <p id="savings">₹0</p>
+      </div>
+    </div>
+
+    <!-- TAX COMPARISON -->
+    <div class="comparison-box">
+      <h2>Old vs New Regime</h2>
+      <div class="comparison">
+        <div>
+          <h4>Old Regime</h4>
+          <p id="oldTax">₹0</p>
+        </div>
+        <div>
+          <h4>New Regime</h4>
+          <p id="newTax">₹0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI ACTIONS -->
+    <div class="ai-section">
+      <button onclick="explainTax()">Explain My Tax</button>
+      <button onclick="taxSaving()">AI Tax Saving Tips</button>
+
+      <div id="aiOutput" class="ai-output">
+        Click a button to get AI insights.
+      </div>
+    </div>
+
+  </section>
+
+  <script src="js/dashboard.js"></script>
+  <script>
+ document.getElementById("explainBtn").addEventListener("click", explainTax);
+
+
+  </script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>TaxBuddy — Tax Analysis</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      padding: 2rem 1rem;
+      margin-bottom: 2rem;
+      border-radius: 12px;
+    }
+    .page-header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .page-header p {
+      margin: 0.5rem 0 0 0;
+      opacity: 0.9;
+    }
+
+    .upload-section {
+      background: var(--glass);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 2px dashed rgba(79, 70, 229, 0.5);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .upload-section h2 {
+      color: #4f46e5;
+      margin-top: 0;
+    }
+
+    .upload-zone {
+      padding: 2rem;
+      border-radius: 8px;
+      background: rgba(79, 70, 229, 0.1);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .upload-zone:hover {
+      background: rgba(79, 70, 229, 0.15);
+      border-color: #4f46e5;
+    }
+
+    .upload-zone p {
+      margin: 0.5rem 0;
+      color: #d1d5db;
+    }
+
+    .upload-zone .icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .analysis-result {
+      background: var(--glass);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 2rem;
+      display: none;
+    }
+
+    .analysis-result.active {
+      display: block;
+    }
+
+    .analysis-result h2 {
+      color: #4f46e5;
+      margin-top: 0;
+    }
+
+    .insight-item {
+      background: #1a202c;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .insight-item h4 {
+      margin: 0 0 0.5rem 0;
+      color: #c7d2fe;
+    }
+
+    .insight-item p {
+      margin: 0;
+      color: #d1d5db;
+      line-height: 1.6;
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .file-list {
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .file-item {
+      background: #1a202c;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin: 0.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .file-item .name {
+      color: #d1d5db;
+    }
+
+    .file-item .action {
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .history-section {
+      background: var(--glass);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 2rem;
+    }
+
+    .history-section h2 {
+      color: #4f46e5;
+      margin-top: 0;
+    }
+
+    .history-item {
+      background: #1a202c;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 0.75rem 0;
+      border-left: 3px solid #4f46e5;
+    }
+
+    .history-item .date {
+      color: #9ca3af;
+      font-size: 0.85rem;
+    }
+
+    .history-item .name {
+      color: #d1d5db;
+      font-weight: 600;
+      margin: 0.25rem 0;
+    }
+
+    .history-item .status {
+      color: #10b981;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+  <div class="nav-left">
+    <span class="brand">💼 TaxBuddy</span>
+  </div>
+
+  <div class="nav-center">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="tax-calculator.html">Tax Calculator</a>
+    <a href="investment.html">Investment Planner</a>
+    <a href="analysis.html">Tax Analysis</a>
+  </div>
+
+  <div class="nav-right">
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+
+  <main class="container">
+    <div class="page-header">
+      <h1>📄 Tax Document Analysis</h1>
+      <p>Upload tax documents and get AI-powered analysis and insights</p>
+    </div>
+
+    <!-- UPLOAD SECTION -->
+    <div class="upload-section">
+      <h2>Upload Tax Documents</h2>
+      <p style="color: #9ca3af; margin-bottom: 1.5rem;">Supported formats: PDF, JPG, PNG, DOC</p>
+      
+      <div class="upload-zone" id="uploadZone">
+        <div class="icon">📤</div>
+        <p><strong>Click to upload or drag and drop</strong></p>
+        <p style="font-size: 0.85rem;">Tax returns, invoices, deduction proofs</p>
+      </div>
+      
+      <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+      
+      <div class="file-list" id="fileList"></div>
+      <div id="messages"></div>
+      
+      <button id="analyzeBtn" style="margin-top: 1.5rem; padding: 0.75rem 2rem; background: linear-gradient(135deg, #4f46e5, #6366f1); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; display: none;">
+        🤖 Analyze Documents
+      </button>
+    </div>
+
+    <!-- ANALYSIS RESULTS -->
+    <div class="analysis-result" id="analysisResult">
+      <h2>📊 Analysis Report</h2>
+      <div id="resultContent"></div>
+    </div>
+
+    <!-- ANALYSIS HISTORY -->
+    <div class="history-section">
+      <h2>📋 Recent Analysis History</h2>
+      <div id="historyContent">
+        <p style="text-align: center; color: #9ca3af;">No analysis history yet. Upload documents to get started!</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const API_URL = 'http://localhost:4000/api';
+      const token = localStorage.getItem('tb_token');
+      let uploadedFiles = [];
+
+      // Check authentication
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Navigation
+      const navDashboard = document.getElementById('nav-dashboard');
+      const navCalc = document.getElementById('nav-calc');
+      const navInvest = document.getElementById('nav-invest');
+      const logoutBtn = document.getElementById('logout');
+
+      if (navDashboard) navDashboard.addEventListener('click', () => {
+        window.location.href = 'dashboard.html';
+      });
+      if (navCalc) navCalc.addEventListener('click', () => {
+        window.location.href = 'tax-calculator.html';
+      });
+      if (navInvest) navInvest.addEventListener('click', () => {
+        window.location.href = 'investment.html';
+      });
+      if (logoutBtn) logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('tb_token');
+        localStorage.removeItem('tb_user');
+        window.location.href = 'login.html';
+      });
+
+      // File upload handling
+      const uploadZone = document.getElementById('uploadZone');
+      const fileInput = document.getElementById('fileInput');
+      const fileList = document.getElementById('fileList');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+
+    if (uploadZone) uploadZone.addEventListener('click', () => fileInput.click());
+
+    // Drag and drop
+    if (uploadZone) {
+      uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.style.backgroundColor = 'rgba(79, 70, 229, 0.2)';
+      });
+
+      uploadZone.addEventListener('dragleave', () => {
+        uploadZone.style.backgroundColor = '';
+      });
+
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.style.backgroundColor = '';
+        handleFiles(e.dataTransfer.files);
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+      });
+    }
+
+    function handleFiles(files) {
+      uploadedFiles = Array.from(files);
+      displayFileList();
+      analyzeBtn.style.display = uploadedFiles.length > 0 ? 'block' : 'none';
+    }
+
+    function displayFileList() {
+      fileList.innerHTML = '';
+      uploadedFiles.forEach((file, index) => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.innerHTML = `
+          <span class="name">📄 ${file.name}</span>
+          <span class="action" onclick="removeFile(${index})">Remove</span>
+        `;
+        fileList.appendChild(div);
+      });
+    }
+
+    function removeFile(index) {
+      uploadedFiles.splice(index, 1);
+      displayFileList();
+      analyzeBtn.style.display = uploadedFiles.length > 0 ? 'block' : 'none';
+    }
+
+    // Analyze documents
+    analyzeBtn.addEventListener('click', async () => {
+      if (uploadedFiles.length === 0) return;
+
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = '⏳ Analyzing...';
+
+      try {
+        const formData = new FormData();
+        // The backend expects field "document"
+        formData.append('document', uploadedFiles[0]);
+        
+        const response = await fetch(`${API_URL}/tax/analyze`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Analysis failed');
+        }
+        
+        // Convert markdown-style bold from AI response to HTML
+        let formattedSummary = data.summary
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+
+        document.getElementById('resultContent').innerHTML = `
+          <div class="insight-item">
+            <h4>🤖 AI Analysis Report</h4>
+            <p>${formattedSummary}</p>
+          </div>
+        `;
+        document.getElementById('analysisResult').classList.add('active');
+        document.getElementById('analysisResult').scrollIntoView({ behavior: 'smooth' });
+        
+        // Add to history
+        addToHistory(uploadedFiles[0].name);
+        
+        showMessage('✓ Analysis completed successfully!', 'success');
+      } catch (error) {
+        showMessage('Error analyzing documents: ' + error.message, 'error');
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = '🤖 Analyze Documents';
+      }
+    });
+
+
+    function addToHistory(description) {
+      const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+      history.unshift({
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        description: description,
+        status: 'Completed'
+      });
+      
+      // Keep last 10 analyses
+      history.splice(10);
+      localStorage.setItem('analysisHistory', JSON.stringify(history));
+      
+      displayHistory();
+    }
+
+    function displayHistory() {
+      const history = JSON.parse(localStorage.getItem('analysisHistory') || '[]');
+      const historyContent = document.getElementById('historyContent');
+      
+      if (history.length === 0) {
+        historyContent.innerHTML = '<p style="text-align: center; color: #9ca3af;">No analysis history yet.</p>';
+        return;
+      }
+
+      historyContent.innerHTML = history.map(item => `
+        <div class="history-item">
+          <div class="date">${item.date} at ${item.time}</div>
+          <div class="name">${item.description}</div>
+          <div class="status">✓ ${item.status}</div>
+        </div>
+      `).join('');
+    }
+
+    function showMessage(text, type = 'error') {
+      const div = document.createElement('div');
+      div.className = type;
+      div.textContent = text;
+      
+      const messages = document.getElementById('messages');
+      messages.innerHTML = '';
+      messages.appendChild(div);
+      
+      setTimeout(() => div.remove(), 5000);
+    }
+
+    // Load history on page load
+    displayHistory();
+    }); // Close DOMContentLoaded
+  </script>
+</body>
+</html>
